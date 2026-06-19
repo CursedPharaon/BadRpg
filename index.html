@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Lineage 2D — RPG (Save Fix)</title>
+    <style>
+        :root {
+            --gold: #c9a432;
+            --text: #d4c5a0;
+            --border: #5a4a2a;
+            --parchment: #e8d5a0;
+            --red: #8b2020;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            touch-action: manipulation;
+            -webkit-overflow-scrolling: none;
+            background: #0d0d08;
+        }
+
+        body {
+            font-family: 'Times New Roman', 'Georgia', serif;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .top-bar {
+            background: linear-gradient(180deg, #1a1008 0%, #0d0804 100%);
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #4a3a1a;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            z-index: 200;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            min-height: 32px;
+        }
+        .top-bar .stat {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-weight: bold;
+            font-size: 9px;
+        }
+        .top-bar .stat .icon { font-size: 12px; }
+        .top-bar .stat .value { color: var(--gold); font-size: 11px; }
+        .hp-bar-mini {
+            width: 65px; height: 6px;
+            background: #2a0a0a;
+            border: 1px solid #6a3a3a;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .hp-bar-mini .fill {
+            height: 100%;
+            background: linear-gradient(180deg, #d04040, #8b2020);
+            transition: width 0.4s;
+        }
+        .exp-bar-mini {
+            width: 55px; height: 5px;
+            background: #1a2a0a;
+            border: 1px solid #4a6a2a;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .exp-bar-mini .fill {
+            height: 100%;
+            background: linear-gradient(180deg, #80d040, #4a8b20);
+            transition: width 0.4s;
+        }
+        .location-indicator {
+            margin-left: auto;
+            font-size: 9px;
+            color: #c0a060;
+            white-space: nowrap;
+        }
+        .save-dot {
+            width: 8px; height: 8px;
+            background: #5a8a3a;
+            border-radius: 50%;
+            animation: saveBlink 0.6s;
+        }
+        @keyframes saveBlink {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .world-scroll {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            background: #1a1a0a;
+        }
+        .game-world {
+            width: 900px;
+            height: 650px;
+            position: relative;
+            background: #3a4a2a;
+            cursor: grab;
+            min-width: 900px;
+            min-height: 650px;
+        }
+        .game-world:active { cursor: grabbing; }
+        .game-world.night {
+            background: #1a2a1a;
+            filter: brightness(0.5) saturate(0.6);
+        }
+        .game-world::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><circle cx="30" cy="30" r="1.5" fill="%235a6a3a" opacity="0.4"/><circle cx="15" cy="45" r="1" fill="%234a5a2a" opacity="0.3"/><circle cx="48" cy="18" r="1.2" fill="%236a7a4a" opacity="0.35"/></svg>');
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .location-label {
+            position: absolute;
+            font-size: 11px;
+            color: #e0d8b0;
+            text-shadow: 1px 1px 2px #000;
+            pointer-events: none;
+            z-index: 5;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .teleport-point {
+            position: absolute;
+            width: 32px; height: 32px;
+            background: radial-gradient(circle, #8090ff 0%, #3040a0 70%, transparent 70%);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            animation: teleportGlow 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: white;
+            text-shadow: 0 0 3px #000;
+            font-weight: bold;
+        }
+        @keyframes teleportGlow {
+            0%,100% { box-shadow: 0 0 8px #6080ff; }
+            50% { box-shadow: 0 0 18px #80a0ff; }
+        }
+
+        .mob {
+            position: absolute;
+            width: 26px; height: 26px;
+            background: radial-gradient(circle, #e0c040 0%, #b09020 60%, #705000 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 15;
+            transition: left 1.5s linear, top 1.5s linear;
+            box-shadow: 0 0 10px rgba(200,160,40,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+            color: #3a2a00;
+            font-weight: bold;
+        }
+        .mob.selected {
+            outline: 3px dashed #ffcc00;
+            outline-offset: 4px;
+            animation: outlineDash 0.8s linear infinite;
+            z-index: 20;
+        }
+        @keyframes outlineDash {
+            0% { outline-offset: 3px; }
+            50% { outline-offset: 8px; }
+            100% { outline-offset: 3px; }
+        }
+        .mob.cave-mob { background: radial-gradient(circle, #909090 0%, #505050 60%, #202020 100%); }
+        .mob.dungeon-mob { background: radial-gradient(circle, #c04040 0%, #801010 60%, #400000 100%); }
+        .mob.field-mob { background: radial-gradient(circle, #c0a040 0%, #806010 60%, #402000 100%); }
+        .mob-ellad { background: radial-gradient(circle, #e0e0ff 0%, #8080c0 60%, #303060 100%); }
+
+        .target-panel {
+            position: fixed;
+            right: 8px; top: 50px;
+            background: rgba(10,5,0,0.94);
+            border: 2px solid #5a4a2a;
+            padding: 10px;
+            font-size: 10px;
+            z-index: 250;
+            min-width: 140px;
+            display: none;
+            color: #d4c5a0;
+        }
+        .target-panel.visible { display: block; }
+        .target-panel .mob-name { font-size: 12px; color: #e0c040; font-weight: bold; }
+        .target-panel button {
+            display: block; width: 100%;
+            margin-top: 4px; padding: 5px;
+            border: 1px solid #5a4a2a;
+            background: #2a1a08;
+            color: #d4c5a0;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 10px;
+        }
+        .target-panel .attack-btn {
+            background: #4a1010;
+            color: #ffaaaa;
+            border-color: #8b2020;
+        }
+
+        .inventory-overlay {
+            position: fixed;
+            left: 5px; top: 38px;
+            width: 250px;
+            max-height: 70%;
+            background: rgba(15,10,2,0.96);
+            border: 3px solid #5a4a2a;
+            z-index: 300;
+            display: none;
+            flex-direction: column;
+            padding: 8px;
+            font-size: 10px;
+            overflow-y: auto;
+            color: #c0b090;
+        }
+        .inventory-overlay.visible { display: flex; }
+        .inventory-overlay h3 {
+            text-align: center;
+            color: var(--gold);
+            border-bottom: 1px solid #4a3a1a;
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .inv-item {
+            padding: 4px 6px;
+            border-bottom: 1px solid #2a1a08;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+        }
+        .inv-item.equipped {
+            color: #80ff80;
+            border-left: 3px solid #4a8b20;
+        }
+        .char-preview {
+            text-align: center;
+            padding: 8px;
+            border-bottom: 2px solid #4a3a1a;
+            margin-bottom: 8px;
+        }
+        .char-preview img { width: 60px; height: auto; }
+
+        .shop-overlay {
+            position: fixed;
+            inset: 35px 10px 10px 10px;
+            background: rgba(20,12,4,0.97);
+            border: 4px solid #6a5a3a;
+            z-index: 310;
+            display: none;
+            flex-direction: column;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 11px;
+        }
+        .shop-overlay.visible { display: flex; }
+        .shop-overlay .shop-bg {
+            background: var(--parchment);
+            color: #2a1a08;
+            padding: 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .shop-tabs { display: flex; gap: 3px; margin-bottom: 10px; }
+        .shop-tabs button {
+            padding: 6px 12px;
+            background: #3a2a0a;
+            border: 1px solid #6a5a2a;
+            color: #c0a060;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 11px;
+        }
+        .shop-tabs button.active {
+            background: #6a4a10;
+            color: #fff;
+            border-color: #c9a432;
+        }
+        .shop-close {
+            position: absolute;
+            right: 10px; top: 10px;
+            width: 26px; height: 26px;
+            background: #6a2020;
+            color: #ffaaaa;
+            border: 1px solid #8b2020;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 5;
+            text-align: center;
+            line-height: 24px;
+        }
+        .shop-cards { display: flex; flex-wrap: wrap; gap: 8px; }
+        .shop-card {
+            width: 120px;
+            background: #f5ead0;
+            border: 2px solid #8a7a4a;
+            padding: 8px;
+            text-align: center;
+            font-size: 10px;
+            color: #1a1008;
+        }
+        .shop-card .card-name { font-weight: bold; font-size: 11px; color: #3a2010; }
+        .shop-card .card-desc { font-size: 9px; color: #5a4a3a; }
+        .shop-card .card-price { color: #8b5010; font-weight: bold; }
+        .shop-card .buy-btn {
+            background: #8b2020;
+            color: #ffdddd;
+            border: 1px solid #5a1010;
+            padding: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 10px;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .ui-btn {
+            position: fixed;
+            right: 6px;
+            width: 34px; height: 34px;
+            background: #3a3a2a;
+            border: 2px solid #6a5a2a;
+            color: #c0b080;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            z-index: 290;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #btn-inventory { top: 42px; }
+        #btn-shop { top: 80px; }
+        #btn-save {
+            top: 118px;
+            font-size: 12px;
+            background: #2a3a1a;
+            border-color: #4a6a2a;
+        }
+
+        .floating-msg {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.92);
+            color: #e0c040;
+            padding: 10px 20px;
+            border: 2px solid #6a5a2a;
+            z-index: 400;
+            font-family: inherit;
+            font-size: 13px;
+            pointer-events: none;
+            animation: fadeUp 2s forwards;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 1; transform: translate(-50%, -50%); }
+            80% { opacity: 0.8; transform: translate(-50%, -70%); }
+            100% { opacity: 0; transform: translate(-50%, -100%); }
+        }
+        .damage-num {
+            position: absolute;
+            color: #ff4444;
+            font-weight: bold;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 40;
+            animation: dmgFloat 1.2s forwards;
+        }
+        @keyframes dmgFloat {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-35px); }
+        }
+
+        .swipe-hint {
+            position: fixed;
+            bottom: 6px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: #8a7a5a;
+            font-size: 9px;
+            padding: 3px 10px;
+            border-radius: 8px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        @media (max-width: 500px) {
+            .top-bar { font-size: 8px; gap: 3px; padding: 2px 4px; min-height: 26px; }
+            .hp-bar-mini { width: 45px; height: 5px; }
+            .exp-bar-mini { width: 40px; height: 4px; }
+            .inventory-overlay { width: 200px; left: 2px; top: 30px; max-height: 60%; font-size: 9px; }
+            .shop-card { width: 90px; font-size: 8px; }
+            .ui-btn { width: 28px; height: 28px; font-size: 12px; right: 3px; }
+            #btn-inventory { top: 34px; }
+            #btn-shop { top: 66px; }
+            #btn-save { top: 98px; }
+            .target-panel { right: 2px; top: 40px; min-width: 120px; font-size: 9px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar" id="top-bar">
+        <div class="stat"><span class="icon">👤</span> Ур: <span class="value" id="stat-level">1</span></div>
+        <div class="stat">❤️<div class="hp-bar-mini"><div class="fill" id="hp-fill" style="width:100%"></div></div><span class="value" id="stat-hp">100/100</span></div>
+        <div class="stat">⭐<div class="exp-bar-mini"><div class="fill" id="exp-fill" style="width:0%"></div></div><span class="value" id="stat-exp">0/400</span></div>
+        <div class="stat"><span class="icon">💰</span> <span class="value" id="stat-gold">10000</span></div>
+        <div class="stat"><span class="icon">⚔️</span> <span class="value" id="stat-dmg">4</span></div>
+        <span class="location-indicator" id="location-indicator">🏰 Начальный Город</span>
+        <span id="save-dot-container"></span>
+    </div>
+
+    <div class="world-scroll" id="world-scroll">
+        <div class="game-world" id="game-world"></div>
+    </div>
+
+    <div class="swipe-hint">↔ Свайпайте для перемещения по карте</div>
+
+    <button class="ui-btn" id="btn-inventory" title="Инвентарь">I</button>
+    <button class="ui-btn" id="btn-shop" title="Магазин">S</button>
+    <button class="ui-btn" id="btn-save" title="Сохранить">💾</button>
+
+    <div class="inventory-overlay" id="inventory-overlay">
+        <div class="char-preview">
+            <img src="https://i.ibb.co/QFh4d18z/84-20260619235002.png" alt="Персонаж">
+            <div style="color:#c0a060;margin-top:3px;font-size:11px;">Октавиус</div>
+        </div>
+        <h3>🎒 ИНВЕНТАРЬ</h3>
+        <div style="border-bottom:1px solid #3a2a0a;padding-bottom:4px;margin-bottom:4px;">
+            <div style="color:#8a7a4a;font-size:9px;">ЭКИПИРОВКА:</div>
+            <div id="equip-weapon" style="font-size:10px;">Оружие: нет</div>
+            <div id="equip-armor" style="font-size:10px;">Броня: нет</div>
+        </div>
+        <div id="inv-items"></div>
+    </div>
+
+    <div class="shop-overlay" id="shop-overlay">
+        <button class="shop-close" id="shop-close">✕</button>
+        <div class="shop-bg">
+            <div class="shop-tabs">
+                <button class="active" data-tab="weapons">⚔️ Оружие</button>
+                <button data-tab="armor">🛡 Броня</button>
+            </div>
+            <div class="shop-cards" id="shop-cards"></div>
+        </div>
+    </div>
+
+    <div class="target-panel" id="target-panel">
+        <div class="mob-name" id="target-name">—</div>
+        <div>❤️ ХП: <span id="target-hp">0</span></div>
+        <div>⚔️ Урон: <span id="target-dmg">0</span></div>
+        <div>💰 Награда: <span id="target-reward">0 зол</span></div>
+        <button class="attack-btn" id="btn-attack">⚔️ АТАКОВАТЬ</button>
+        <button id="btn-cancel-target">✕ Отмена</button>
+    </div>
+
+    <script>
+        // ==================== СИСТЕМА СОХРАНЕНИЯ (ПОЛНОСТЬЮ НАДЁЖНАЯ) ====================
+        const SAVE_KEY = 'lineage2d_full_save';
+
+        const defaultState = {
+            gold: 10000,
+            damage: 4,
+            level: 1,
+            maxLevel: 225,
+            hp: 100,
+            maxHp: 100,
+            exp: 0,
+            expToLevel: 400,
+            location: 'начальный_город',
+            inventory: [],
+            equipment: { weapon: null, armor: null },
+            isDay: true
+        };
+
+        // Текущее состояние (НЕ вложенные объекты для избежания багов ссылок)
+        let gold = defaultState.gold;
+        let damage = defaultState.damage;
+        let level = defaultState.level;
+        let maxLevel = defaultState.maxLevel;
+        let hp = defaultState.hp;
+        let maxHp = defaultState.maxHp;
+        let exp = defaultState.exp;
+        let expToLevel = defaultState.expToLevel;
+        let currentLocation = defaultState.location;
+        let inventory = [];
+        let equipment = { weapon: null, armor: null };
+        let isDay = defaultState.isDay;
+        let mobs = [];
+        let selectedMob = null;
+        let mobAttackIntervals = {};
+        let dayTimer = null;
+
+        function saveGame() {
+            try {
+                const saveData = {
+                    gold: gold,
+                    damage: damage,
+                    level: level,
+                    maxLevel: maxLevel,
+                    hp: hp,
+                    maxHp: maxHp,
+                    exp: exp,
+                    expToLevel: expToLevel,
+                    location: currentLocation,
+                    inventory: JSON.parse(JSON.stringify(inventory)),
+                    equipment: JSON.parse(JSON.stringify(equipment)),
+                    isDay: isDay
+                };
+                const jsonStr = JSON.stringify(saveData);
+                localStorage.setItem(SAVE_KEY, jsonStr);
+                // Мигаем точкой сохранения
+                const dot = document.createElement('span');
+                dot.className = 'save-dot';
+                document.getElementById('save-dot-container').appendChild(dot);
+                setTimeout(() => dot.remove(), 600);
+                console.log('💾 Сохранено: HP=' + hp + ' Золото=' + gold + ' Уровень=' + level + ' Локация=' +
+                currentLocation);
+            } catch (e) {
+                console.error('Ошибка сохранения:', e);
+            }
+        }
+
+        function loadGame() {
+            try {
+                const jsonStr = localStorage.getItem(SAVE_KEY);
+                if (!jsonStr) {
+                    console.log('📂 Сохранение не найдено');
+                    return false;
+                }
+                const data = JSON.parse(jsonStr);
+                if (!data || typeof data !== 'object') {
+                    console.log('📂 Сохранение повреждено');
+                    return false;
+                }
+                gold = data.gold ?? defaultState.gold;
+                damage = data.damage ?? defaultState.damage;
+                level = data.level ?? defaultState.level;
+                maxLevel = data.maxLevel ?? defaultState.maxLevel;
+                hp = data.hp ?? defaultState.hp;
+                maxHp = data.maxHp ?? defaultState.maxHp;
+                exp = data.exp ?? defaultState.exp;
+                expToLevel = data.expToLevel ?? defaultState.expToLevel;
+                currentLocation = data.location ?? defaultState.location;
+                inventory = Array.isArray(data.inventory) ? JSON.parse(JSON.stringify(data.inventory)) : [];
+                equipment = data.equipment ? JSON.parse(JSON.stringify(data.equipment)) : { weapon: null, armor: null };
+                isDay = data.isDay ?? true;
+                console.log('📂 Загружено: HP=' + hp + ' Золото=' + gold + ' Уровень=' + level + ' Локация=' +
+                currentLocation + ' Инвентарь=' + inventory.length + ' предметов');
+                return true;
+            } catch (e) {
+                console.error('Ошибка загрузки:', e);
+                return false;
+            }
+        }
+
+        function resetGame() {
+            localStorage.removeItem(SAVE_KEY);
+            gold = defaultState.gold;
+            damage = defaultState.damage;
+            level = defaultState.level;
+            maxLevel = defaultState.maxLevel;
+            hp = defaultState.hp;
+            maxHp = defaultState.maxHp;
+            exp = defaultState.exp;
+            expToLevel = defaultState.expToLevel;
+            currentLocation = defaultState.location;
+            inventory = [];
+            equipment = { weapon: null, armor: null };
+            isDay = defaultState.isDay;
+            saveGame();
+            console.log('🆕 Игра сброшена');
+        }
+
+        // ==================== ЛОКАЦИИ ====================
+        const locations = {
+            'начальный_город': { x: 120, y: 350, label: '🏰 Начальный Город' },
+            'лес': { x: 420, y: 180, label: '🌲 Лес', mobType: 'forest', mobCount: 6 },
+            'пещера': { x: 650, y: 420, label: '🕳 Пещера', mobType: 'cave', mobCount: 4 },
+            'подземелья': { x: 80, y: 540, label: '🏚 Подземелья', mobType: 'dungeon', mobCount: 5 },
+            'пустырь': { x: 580, y: 560, label: '🏜 Пустырь', mobType: 'field', mobCount: 5 },
+            'Эллады': { x: 400, y: 60, label: '✨ Эллады', mobType: 'ellad', mobCount: 3 }
+        };
+
+        // ==================== МОБЫ ====================
+        const mobData = {
+            forest: {
+                name: 'Лесной зверь', hp: 16, damage: 12, attackSpeed: 4000,
+                expMin: 10, expMax: 40, gold: 1200, cssClass: '',
+                drops: [
+                    { name: 'Броня леса', type: 'armor', stat: 'hp', value: 5, percent: true, dropChance: 45, desc: '+5% ХП и урона' },
+                    { name: 'Меч лесника', type: 'weapon', stat: 'damage', value: 35, percent: false, dropChance: 35, desc: 'Урон 35' }
+                ]
+            },
+            cave: {
+                name: 'Пещерный Голем', hp: 150, damage: 45, attackSpeed: 3000,
+                expMin: 50, expMax: 80, gold: 1900, cssClass: 'cave-mob',
+                drops: [
+                    { name: 'Меч пещерного Голема', type: 'weapon', stat: 'damage', value: 85, percent: false, dropChance: 25, desc: 'Урон 85' },
+                    { name: 'Нагрудник пещерного Голема', type: 'armor', stat: 'hp', value: 55, percent: false, dropChance: 24, desc: 'ХП +55' }
+                ]
+            },
+            dungeon: {
+                name: 'Тёмный Рыцарь', hp: 280, damage: 65, attackSpeed: 3500,
+                expMin: 90, expMax: 140, gold: 3200, cssClass: 'dungeon-mob',
+                drops: [
+                    { name: 'Меч Тёмного Рыцаря', type: 'weapon', stat: 'damage', value: 120, percent: false, dropChance: 20, desc: 'Урон 120' },
+                    { name: 'Щит Тьмы', type: 'armor', stat: 'hp', value: 90, percent: false, dropChance: 22, desc: 'ХП +90' }
+                ]
+            },
+            field: {
+                name: 'Пустынный Страж', hp: 420, damage: 95, attackSpeed: 3200,
+                expMin: 160, expMax: 240, gold: 5500, cssClass: 'field-mob',
+                drops: [
+                    { name: 'Клинок Стража', type: 'weapon', stat: 'damage', value: 175, percent: false, dropChance: 18, desc: 'Урон 175' },
+                    { name: 'Доспех Пустыни', type: 'armor', stat: 'hp', value: 140, percent: false, dropChance: 20, desc: 'ХП +140' }
+                ]
+            },
+            ellad: {
+                name: 'Элладский Хранитель', hp: 700, damage: 150, attackSpeed: 2800,
+                expMin: 300, expMax: 500, gold: 12000, cssClass: 'mob-ellad',
+                drops: [
+                    { name: 'Меч Элладов', type: 'weapon', stat: 'damage', value: 280, percent: false, dropChance: 15, desc: 'Урон 280' },
+                    { name: 'Мантия Хранителя', type: 'armor', stat: 'hp', value: 250, percent: false, dropChance: 16, desc: 'ХП +250' }
+                ]
+            }
+        };
+
+        // ==================== МАГАЗИН ====================
+        const shopItems = {
+            weapons: [
+                { name: 'Виадукский меч', price: 42000, desc: 'Меч племени Виадуков.', type: 'weapon', stat: 'damage', value: 200 },
+                { name: 'Рунический меч', price: 72000, desc: 'Меч из тысяч рун.', type: 'weapon', stat: 'damage', value: 320 },
+                { name: 'Клинок Теней', price: 115000, desc: 'Выкован из осколков тьмы.', type: 'weapon', stat: 'damage', value: 480 },
+                { name: 'Молот Горного Короля', price: 180000, desc: 'Разбивает скалы и врагов.', type: 'weapon', stat: 'damage', value: 650 },
+                { name: 'Посох Архимага', price: 250000, desc: 'Посох величайшего мага.', type: 'weapon', stat: 'damage', value: 850 }
+            ],
+            armor: [
+                { name: 'Кольчуга Странника', price: 28000, desc: 'Лёгкая кольчуга.', type: 'armor', stat: 'hp', value: 80 },
+                { name: 'Латный Доспех', price: 65000, desc: 'Доспех рыцарей империи.', type: 'armor', stat: 'hp', value: 180 },
+                { name: 'Доспех Дракона', price: 150000, desc: 'Чешуя древнего дракона.', type: 'armor', stat: 'hp', value: 350 },
+                { name: 'Мантия Невидимости', price: 200000, desc: 'Скрывает от глаз врагов.', type: 'armor', stat: 'hp', value: 500 }
+            ]
+        };
+
+        // ==================== DOM ====================
+        const gameWorld = document.getElementById('game-world');
+        const worldScroll = document.getElementById('world-scroll');
+        const inventoryOverlay = document.getElementById('inventory-overlay');
+        const shopOverlay = document.getElementById('shop-overlay');
+        const targetPanel = document.getElementById('target-panel');
+        const shopCards = document.getElementById('shop-cards');
+
+        // ==================== СТАТИСТИКА ====================
+        function updateStats() {
+            document.getElementById('stat-level').textContent = level;
+            document.getElementById('stat-hp').textContent = `${hp}/${maxHp}`;
+            document.getElementById('stat-exp').textContent = `${exp}/${expToLevel}`;
+            document.getElementById('stat-gold').textContent = gold.toLocaleString();
+            document.getElementById('stat-dmg').textContent = damage;
+            document.getElementById('hp-fill').style.width = (hp / maxHp * 100) + '%';
+            document.getElementById('exp-fill').style.width = (exp / expToLevel * 100) + '%';
+            document.getElementById('location-indicator').textContent = locations[currentLocation]?.label || '';
+        }
+
+        function recalcStats() {
+            let baseHp = 100 + (level - 1) * 30;
+            if (equipment.armor) {
+                if (equipment.armor.percent) {
+                    baseHp = Math.floor(baseHp * (1 + equipment.armor.value / 100));
+                } else {
+                    baseHp += equipment.armor.value;
+                }
+            }
+            maxHp = baseHp;
+            if (hp > maxHp) hp = maxHp;
+            let baseDmg = 4 + (level - 1) * 3;
+            if (equipment.weapon) baseDmg += equipment.weapon.value;
+            if (equipment.armor && equipment.armor.percent) {
+                baseDmg = Math.floor(baseDmg * (1 + equipment.armor.value / 100));
+            }
+            damage = baseDmg;
+        }
+
+        // ==================== СООБЩЕНИЯ ====================
+        function showMessage(text) {
+            const msg = document.createElement('div');
+            msg.className = 'floating-msg';
+            msg.textContent = text;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
+        }
+
+        function showDamage(x, y, dmg) {
+            const num = document.createElement('div');
+            num.className = 'damage-num';
+            num.textContent = '-' + dmg;
+            num.style.left = x + 'px';
+            num.style.top = y + 'px';
+            gameWorld.appendChild(num);
+            setTimeout(() => num.remove(), 1200);
+        }
+
+        // ==================== ИНВЕНТАРЬ ====================
+        function toggleInventory() {
+            inventoryOverlay.classList.toggle('visible');
+            shopOverlay.classList.remove('visible');
+            if (inventoryOverlay.classList.contains('visible')) renderInventory();
+        }
+
+        function renderInventory() {
+            const invItems = document.getElementById('inv-items');
+            invItems.innerHTML = '';
+            if (inventory.length === 0) {
+                invItems.innerHTML = '<div style="color:#6a5a3a;text-align:center;padding:15px;">Пусто</div>';
+            }
+            inventory.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'inv-item';
+                const isWeaponEquipped = equipment.weapon && equipment.weapon.name === item.name;
+                const isArmorEquipped = equipment.armor && equipment.armor.name === item.name;
+                if (isWeaponEquipped || isArmorEquipped) div.classList.add('equipped');
+                div.innerHTML = `<span>${item.name}</span><span style="color:#8a7a4a;font-size:9px;">${item.type === 'weapon' ? '⚔️' : '🛡'}</span>`;
+                div.addEventListener('click', () => equipItem(index));
+                invItems.appendChild(div);
+            });
+            document.getElementById('equip-weapon').textContent = 'Оружие: ' + (equipment.weapon ? equipment.weapon.name : 'нет');
+            document.getElementById('equip-armor').textContent = 'Броня: ' + (equipment.armor ? equipment.armor.name : 'нет');
+        }
+
+        function equipItem(index) {
+            const item = inventory[index];
+            if (!item) return;
+            if (item.type === 'weapon') {
+                if (equipment.weapon && equipment.weapon.name === item.name) {
+                    equipment.weapon = null;
+                } else {
+                    equipment.weapon = item;
+                }
+            } else if (item.type === 'armor') {
+                if (equipment.armor && equipment.armor.name === item.name) {
+                    equipment.armor = null;
+                } else {
+                    equipment.armor = item;
+                }
+            }
+            recalcStats();
+            renderInventory();
+            updateStats();
+            saveGame();
+            console.log('Экипировано:', item.name);
+        }
+
+        function addToInventory(item) {
+            inventory.push(item);
+            if (inventoryOverlay.classList.contains('visible')) renderInventory();
+            saveGame();
+            console.log('Добавлено в инвентарь:', item.name);
+        }
+
+        // ==================== МАГАЗИН ====================
+        function toggleShop() {
+            shopOverlay.classList.toggle('visible');
+            inventoryOverlay.classList.remove('visible');
+            if (shopOverlay.classList.contains('visible')) {
+                renderShop('weapons');
+                document.querySelector('.shop-tabs button[data-tab="weapons"]').classList.add('active');
+                document.querySelector('.shop-tabs button[data-tab="armor"]').classList.remove('active');
+            }
+        }
+
+        function renderShop(tab) {
+            shopCards.innerHTML = '';
+            shopItems[tab].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'shop-card';
+                card.innerHTML = `
+                    <div class="card-name">${item.name}</div>
+                    <div class="card-desc">${item.desc}</div>
+                    <div class="card-price">💰 ${item.price.toLocaleString()}</div>
+                    <button class="buy-btn">КУПИТЬ</button>
+                `;
+                card.querySelector('.buy-btn').addEventListener('click', () => buyItem(item));
+                shopCards.appendChild(card);
+            });
+        }
+
+        function buyItem(item) {
+            if (gold < item.price) {
+                showMessage('Недостаточно золота!');
+                return;
+            }
+            gold -= item.price;
+            addToInventory({ name: item.name, type: item.type, stat: item.stat, value: item.value, percent: false, desc: item.desc });
+            updateStats();
+            saveGame();
+            showMessage(`Куплено: ${item.name}`);
+        }
+
+        // ==================== МОБЫ ====================
+        function spawnMobs(locationKey) {
+            const loc = locations[locationKey];
+            if (!loc || !loc.mobType) return;
+            clearMobs();
+            const data = mobData[loc.mobType];
+            if (!data) return;
+            for (let i = 0; i < loc.mobCount; i++) {
+                const mob = {
+                    id: 'mob_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                    type: loc.mobType,
+                    x: Math.max(20, Math.min(880, loc.x + (Math.random() - 0.5) * 280)),
+                    y: Math.max(40, Math.min(610, loc.y + (Math.random() - 0.5) * 180)),
+                    hp: data.hp,
+                    maxHp: data.hp,
+                    damage: data.damage,
+                    attackSpeed: data.attackSpeed,
+                    expMin: data.expMin,
+                    expMax: data.expMax,
+                    gold: data.gold,
+                    drops: data.drops,
+                    cssClass: data.cssClass || '',
+                    name: data.name,
+                    alive: true,
+                    moveInterval: null
+                };
+                mobs.push(mob);
+                renderMobElement(mob);
+                startMobMovement(mob, locationKey);
+            }
+        }
+
+        function clearMobs() {
+            mobs.forEach(m => {
+                const el = document.getElementById(m.id);
+                if (el) el.remove();
+                if (m.moveInterval) clearInterval(m.moveInterval);
+                if (mobAttackIntervals[m.id]) {
+                    clearInterval(mobAttackIntervals[m.id]);
+                    delete mobAttackIntervals[m.id];
+                }
+            });
+            mobs = [];
+            if (selectedMob) {
+                selectedMob = null;
+                targetPanel.classList.remove('visible');
+            }
+        }
+
+        function renderMobElement(mob) {
+            const el = document.createElement('div');
+            el.className = 'mob ' + mob.cssClass;
+            el.id = mob.id;
+            el.style.left = mob.x + 'px';
+            el.style.top = mob.y + 'px';
+            el.textContent = mob.name.charAt(0);
+            el.addEventListener('click', (e) => { e.stopPropagation();
+                selectMobFunc(mob); });
+            el.addEventListener('touchend', (e) => { e.preventDefault();
+                selectMobFunc(mob); });
+            gameWorld.appendChild(el);
+        }
+
+        function startMobMovement(mob, locationKey) {
+            const loc = locations[locationKey];
+            mob.moveInterval = setInterval(() => {
+                if (!mob.alive) return;
+                mob.x = Math.max(20, Math.min(880, loc.x + (Math.random() - 0.5) * 260));
+                mob.y = Math.max(40, Math.min(610, loc.y + (Math.random() - 0.5) * 160));
+                const el = document.getElementById(mob.id);
+                if (el) { el.style.left = mob.x + 'px';
+                    el.style.top = mob.y + 'px'; }
+                if (selectedMob && selectedMob.id === mob.id) {
+                    document.getElementById('target-hp').textContent = mob.hp + '/' + mob.maxHp;
+                }
+            }, 2500 + Math.random() * 2000);
+        }
+
+        function selectMobFunc(mob) {
+            document.querySelectorAll('.mob.selected').forEach(el => el.classList.remove('selected'));
+            selectedMob = mob;
+            const el = document.getElementById(mob.id);
+            if (el) el.classList.add('selected');
+            targetPanel.classList.add('visible');
+            document.getElementById('target-name').textContent = mob.name;
+            document.getElementById('target-hp').textContent = mob.hp + '/' + mob.maxHp;
+            document.getElementById('target-dmg').textContent = mob.damage;
+            document.getElementById('target-reward').textContent = mob.gold.toLocaleString() + ' зол';
+        }
+
+        function deselectMob() {
+            document.querySelectorAll('.mob.selected').forEach(el => el.classList.remove('selected'));
+            selectedMob = null;
+            targetPanel.classList.remove('visible');
+            Object.keys(mobAttackIntervals).forEach(key => {
+                clearInterval(mobAttackIntervals[key]);
+                delete mobAttackIntervals[key];
+            });
+        }
+
+        function attackMob() {
+            if (!selectedMob || !selectedMob.alive) return;
+            selectedMob.hp -= damage;
+            const el = document.getElementById(selectedMob.id);
+            if (el) showDamage(selectedMob.x + 10, selectedMob.y - 10, damage);
+            document.getElementById('target-hp').textContent = selectedMob.hp + '/' + selectedMob.maxHp;
+            if (selectedMob.hp <= 0) {
+                killMob(selectedMob);
+                return;
+            }
+            if (!mobAttackIntervals[selectedMob.id]) {
+                mobAttackIntervals[selectedMob.id] = setInterval(() => {
+                    const stillExists = mobs.find(m => m.id === selectedMob?.id);
+                    if (!selectedMob || !selectedMob.alive || !stillExists) {
+                        clearInterval(mobAttackIntervals[selectedMob?.id]);
+                        delete mobAttackIntervals[selectedMob?.id];
+                        return;
+                    }
+                    hp -= selectedMob.damage;
+                    if (hp < 0) hp = 0;
+                    updateStats();
+                    saveGame();
+                    showMessage(`Враг атакует! -${selectedMob.damage} HP`);
+                    if (hp <= 0) playerDeath();
+                }, selectedMob.attackSpeed);
+            }
+        }
+
+        function killMob(mob) {
+            mob.alive = false;
+            if (mob.moveInterval) clearInterval(mob.moveInterval);
+            if (mobAttackIntervals[mob.id]) {
+                clearInterval(mobAttackIntervals[mob.id]);
+                delete mobAttackIntervals[mob.id];
+            }
+            const el = document.getElementById(mob.id);
+            if (el) el.remove();
+            const expGain = Math.floor(Math.random() * (mob.expMax - mob.expMin + 1)) + mob.expMin;
+            exp += expGain;
+            gold += mob.gold;
+            checkDrops(mob);
+            if (selectedMob && selectedMob.id === mob.id) deselectMob();
+            checkLevelUp();
+            updateStats();
+            saveGame();
+            showMessage(`Побеждён! +${expGain} EXP, +${mob.gold} золота`);
+            mobs = mobs.filter(m => m.id !== mob.id);
+        }
+
+        function checkDrops(mob) {
+            mob.drops.forEach(drop => {
+                if (Math.random() * 100 < drop.dropChance) {
+                    addToInventory({ name: drop.name, type: drop.type, stat: drop.stat, value: drop.value, percent: drop.percent || false, desc: drop.desc });
+                    showMessage(`🎁 Дроп: ${drop.name}!`);
+                }
+            });
+        }
+
+        function checkLevelUp() {
+            while (exp >= expToLevel && level < maxLevel) {
+                exp -= expToLevel;
+                level++;
+                expToLevel = Math.floor(expToLevel * 1.4);
+                hp = maxHp;
+                recalcStats();
+                updateStats();
+                saveGame();
+                showMessage(`🎉 Уровень ${level}!`);
+            }
+        }
+
+        function playerDeath() {
+            showMessage('💀 Вы погибли...');
+            hp = Math.floor(maxHp / 2);
+            gold = Math.floor(gold * 0.9);
+            deselectMob();
+            updateStats();
+            saveGame();
+            teleportTo('начальный_город');
+        }
+
+        // ==================== ТЕЛЕПОРТАЦИЯ ====================
+        function teleportTo(locationKey) {
+            clearMobs();
+            currentLocation = locationKey;
+            spawnMobs(locationKey);
+            updateStats();
+            const loc = locations[locationKey];
+            if (loc) {
+                const scrollX = loc.x - worldScroll.clientWidth / 2;
+                const scrollY = loc.y - worldScroll.clientHeight / 2;
+                worldScroll.scrollTo({ left: Math.max(0, scrollX), top: Math.max(0, scrollY), behavior: 'smooth' });
+            }
+            saveGame();
+            showMessage(`📍 ${locations[locationKey].label}`);
+            console.log('Телепорт в:', locationKey);
+        }
+
+        function renderTeleportPoints() {
+            Object.entries(locations).forEach(([key, loc]) => {
+                const tp = document.createElement('div');
+                tp.className = 'teleport-point';
+                tp.style.left = loc.x + 'px';
+                tp.style.top = loc.y + 'px';
+                tp.textContent = '↗';
+                tp.addEventListener('click', (e) => { e.stopPropagation();
+                    teleportTo(key); });
+                tp.addEventListener('touchend', (e) => { e.preventDefault();
+                    teleportTo(key); });
+                gameWorld.appendChild(tp);
+                const label = document.createElement('div');
+                label.className = 'location-label';
+                label.style.left = (loc.x - 25) + 'px';
+                label.style.top = (loc.y + 36) + 'px';
+                label.textContent = loc.label;
+                gameWorld.appendChild(label);
+            });
+        }
+
+        // ==================== ДЕНЬ/НОЧЬ ====================
+        function startDayNightCycle() {
+            if (!isDay) gameWorld.classList.add('night');
+            if (dayTimer) clearTimeout(dayTimer);
+            dayTimer = setTimeout(() => {
+                isDay = false;
+                gameWorld.classList.add('night');
+                saveGame();
+                showMessage('🌙 Наступила ночь...');
+                dayTimer = setTimeout(() => {
+                    isDay = true;
+                    gameWorld.classList.remove('night');
+                    saveGame();
+                    showMessage('☀️ Наступил день!');
+                    startDayNightCycle();
+                }, 160000);
+            }, isDay ? 160000 : 10000);
+        }
+
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+        function initGame() {
+            const loaded = loadGame();
+            if (!loaded) {
+                gold = defaultState.gold;
+                damage = defaultState.damage;
+                level = defaultState.level;
+                maxLevel = defaultState.maxLevel;
+                hp = defaultState.hp;
+                maxHp = defaultState.maxHp;
+                exp = defaultState.exp;
+                expToLevel = defaultState.expToLevel;
+                currentLocation = defaultState.location;
+                inventory = [];
+                equipment = { weapon: null, armor: null };
+                isDay = defaultState.isDay;
+                saveGame();
+            }
+            recalcStats();
+            updateStats();
+            renderTeleportPoints();
+            spawnMobs(currentLocation);
+            if (!isDay) gameWorld.classList.add('night');
+            startDayNightCycle();
+            const loc = locations[currentLocation];
+            if (loc) {
+                setTimeout(() => {
+                    worldScroll.scrollTo({ left: Math.max(0, loc.x - worldScroll.clientWidth / 2), top: Math.max(0, loc
+                            .y - worldScroll.clientHeight / 2) });
+                }, 300);
+            }
+            showMessage(loaded ? '📂 Прогресс загружен!' : '🆕 Новая игра!');
+            console.log(loaded ? '✅ Игра загружена из сохранения' : '✅ Новая игра начата');
+        }
+
+        // ==================== СОБЫТИЯ ====================
+        document.getElementById('btn-inventory').addEventListener('click', toggleInventory);
+        document.getElementById('btn-shop').addEventListener('click', toggleShop);
+        document.getElementById('btn-save').addEventListener('click', () => {
+            saveGame();
+            showMessage('💾 Прогресс сохранён!');
+        });
+        document.getElementById('shop-close').addEventListener('click', () => shopOverlay.classList.remove('visible'));
+        document.getElementById('btn-attack').addEventListener('click', attackMob);
+        document.getElementById('btn-cancel-target').addEventListener('click', deselectMob);
+
+        document.querySelectorAll('.shop-tabs button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.shop-tabs button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderShop(btn.dataset.tab);
+            });
+        });
+
+        gameWorld.addEventListener('click', (e) => {
+            if (e.target === gameWorld || e.target.classList.contains('location-label')) deselectMob();
+        });
+
+        worldScroll.addEventListener('scroll', () => {
+            const hint = document.querySelector('.swipe-hint');
+            if (hint) hint.style.opacity = '0';
+        }, { once: true });
+
+        // Автосохранение каждые 5 секунд
+        setInterval(() => saveGame(), 5000);
+
+        // Сохранение при закрытии
+        window.addEventListener('beforeunload', () => saveGame());
+        window.addEventListener('pagehide', () => saveGame());
+
+        // Сохранение при сворачивании (мобильные)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) saveGame();
+        });
+
+        // Запуск
+        initGame();
+    </script>
+</body>
+</html>
