@@ -3,7 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dark Relics 2D — RPG</title>
+    <!-- ============================================================ -->
+    <!-- Dark Relics — Браузерная RPG -->
+    <!-- © 2026 Вагид. Все права защищены. -->
+    <!-- Код является интеллектуальной собственностью автора. -->
+    <!-- Запрещено копирование, распространение и использование без разрешения. -->
+    <!-- ============================================================ -->
+    
+    <title>Dark Relics — Браузерная RPG игра | Тёмное фэнтези</title>
+    <meta name="description" content="Dark Relics — бесплатная браузерная RPG в тёмном фэнтези. Открытый мир, 6 локаций, 225 уровней, мобы, боссы, легендарные предметы, квесты. Играй прямо в браузере без скачивания!">
+    <meta name="keywords" content="Dark Relics, браузерная RPG, тёмное фэнтези, бесплатная RPG, браузерная игра, онлайн игра, 2D RPG, фэнтези игра, инди игра, RPG в браузере">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="ВашеИмя">
+    <link rel="canonical" href="https://bad-rpg.onrender.com/">
+    
+    <meta property="og:title" content="Dark Relics — Браузерная RPG">
+    <meta property="og:description" content="Бесплатная RPG в тёмном фэнтези. Играй прямо в браузере!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bad-rpg.onrender.com/">
+    <meta name="google-site-verification" content="ВАШ_КОД_GOOGLE" />
     <style>
         :root {
             --gold: #c9a432;
@@ -411,6 +429,8 @@
         #btn-shop { top: 80px; }
         #btn-save { top: 118px; font-size: 12px; background: #2a3a1a; border-color: #4a6a2a; }
         #btn-promo { top: 156px; font-size: 12px; background: #3a2a0a; border-color: #c9a432; color: #c9a432; }
+        #btn-quests { top: 194px; font-size: 12px; background: #2a1a3a; border-color: #6a4a8a; color: #c0a0e0; }
+        #btn-bio { top: 232px; font-size: 12px; background: #1a2a3a; border-color: #4a6a8a; color: #a0c0e0; }
 
         .floating-msg {
             position: fixed;
@@ -444,6 +464,24 @@
             0% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-35px); }
         }
+        .heal-num {
+            color: #44ff44;
+            position: absolute;
+            font-weight: bold;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 40;
+            animation: dmgFloat 1.2s forwards;
+        }
+        .gold-num {
+            color: #ffdd44;
+            position: absolute;
+            font-weight: bold;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 40;
+            animation: dmgFloat 1.2s forwards;
+        }
 
         .swipe-hint {
             position: fixed;
@@ -458,6 +496,94 @@
             pointer-events: none;
         }
 
+        /* hidden objects */
+        .hidden-object {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 12;
+            animation: hiddenPulse 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        @keyframes hiddenPulse {
+            0%,100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        /* NPC */
+        .npc {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #80c0ff 0%, #3060a0 60%, #103060 100%);
+            border: 2px solid #80c0ff;
+            cursor: pointer;
+            z-index: 14;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 0 15px rgba(100,150,255,0.3);
+            animation: npcGlow 2s infinite;
+        }
+        @keyframes npcGlow {
+            0%,100% { box-shadow: 0 0 10px rgba(100,150,255,0.3); }
+            50% { box-shadow: 0 0 25px rgba(100,150,255,0.7); }
+        }
+        .npc.alchemist { background: radial-gradient(circle, #80ff80 0%, #208020 60%, #004000 100%); border-color: #80ff80; }
+        .npc.blacksmith { background: radial-gradient(circle, #ffa080 0%, #a04020 60%, #602000 100%); border-color: #ffa080; }
+        .npc.elder { background: radial-gradient(circle, #c0c0ff 0%, #6060a0 60%, #202060 100%); border-color: #c0c0ff; }
+        .npc.lady { background: radial-gradient(circle, #ff80c0 0%, #a04060 60%, #602040 100%); border-color: #ff80c0; }
+        .npc.ghost { background: radial-gradient(circle, #80ffff 0%, #2080a0 60%, #004060 100%); border-color: #80ffff; animation: ghostFlicker 1s infinite; }
+        @keyframes ghostFlicker {
+            0%,100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .quest-diary {
+            position: fixed;
+            inset: 30px 10px 10px 10px;
+            background: rgba(15,10,2,0.97);
+            border: 3px solid #6a4a8a;
+            z-index: 310;
+            display: none;
+            flex-direction: column;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 11px;
+            color: #d4c5a0;
+        }
+        .quest-diary.visible { display: flex; }
+        .quest-diary h3 { color: #c0a0e0; border-bottom: 1px solid #4a3a5a; padding-bottom: 8px; margin-bottom: 10px; }
+        .quest-item { padding: 6px 0; border-bottom: 1px solid #2a1a3a; }
+        .quest-item .qname { color: #c0a0e0; font-weight: bold; }
+        .quest-item .qstatus { color: #80a080; font-size: 9px; }
+        .quest-item .qprogress { color: #a0c0a0; font-size: 9px; }
+        .quest-completed { color: #80ff80; }
+
+        .bio-overlay {
+            position: fixed;
+            inset: 30px 10px 10px 10px;
+            background: rgba(15,10,2,0.97);
+            border: 3px solid #4a6a8a;
+            z-index: 310;
+            display: none;
+            flex-direction: column;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 11px;
+            color: #d4c5a0;
+        }
+        .bio-overlay.visible { display: flex; }
+        .bio-overlay h3 { color: #a0c0e0; border-bottom: 1px solid #3a4a5a; padding-bottom: 8px; margin-bottom: 10px; }
+        .bio-stat { padding: 4px 0; border-bottom: 1px solid #1a2a3a; }
+
         @media (max-width: 500px) {
             .top-bar { font-size: 8px; gap: 3px; padding: 2px 4px; min-height: 26px; }
             .hp-bar-mini { width: 45px; height: 5px; }
@@ -469,17 +595,13 @@
             #btn-shop { top: 66px; }
             #btn-save { top: 98px; }
             #btn-promo { top: 130px; }
+            #btn-quests { top: 162px; }
+            #btn-bio { top: 194px; }
             .target-panel { right: 2px; top: 40px; min-width: 120px; font-size: 9px; }
         }
     </style>
 </head>
 <body>
-<!--
-Dark Relics — браузерная RPG игра
-© 2026. Вагид. Все права защищены.
-Код является интеллектуальной собственностью автора.
-Запрещено копирование, распространение и использование без разрешения.
--->
     <div class="top-bar" id="top-bar">
         <div class="stat"><span class="icon">👤</span> Ур: <span class="value" id="stat-level">1</span></div>
         <div class="stat">❤️<div class="hp-bar-mini"><div class="fill" id="hp-fill" style="width:100%"></div></div><span class="value" id="stat-hp">100/100</span></div>
@@ -500,6 +622,8 @@ Dark Relics — браузерная RPG игра
     <button class="ui-btn" id="btn-shop" title="Магазин">S</button>
     <button class="ui-btn" id="btn-save" title="Сохранить">💾</button>
     <button class="ui-btn" id="btn-promo" title="Промокод">C</button>
+    <button class="ui-btn" id="btn-quests" title="Дневник квестов">Q</button>
+    <button class="ui-btn" id="btn-bio" title="Биография">B</button>
 
     <div class="inventory-overlay" id="inventory-overlay">
         <div class="char-preview">
@@ -521,6 +645,7 @@ Dark Relics — браузерная RPG игра
             <div class="shop-tabs">
                 <button class="active" data-tab="weapons">⚔️ Оружие</button>
                 <button data-tab="armor">🛡 Броня</button>
+                <button data-tab="consumables">🧪 Зелья</button>
             </div>
             <div class="shop-cards" id="shop-cards"></div>
         </div>
@@ -543,14 +668,26 @@ Dark Relics — браузерная RPG игра
         <div id="promo-result" style="font-size:11px;color:#c0a060;"></div>
     </div>
 
+    <div class="quest-diary" id="quest-diary">
+        <button class="shop-close" id="quest-close" style="position:absolute;right:10px;top:10px;width:26px;height:26px;background:#4a2a5a;color:#c0a0e0;border:1px solid #6a4a8a;cursor:pointer;font-size:14px;z-index:5;text-align:center;line-height:24px;">✕</button>
+        <h3>📜 ДНЕВНИК КВЕСТОВ</h3>
+        <div id="quest-list"></div>
+    </div>
+
+    <div class="bio-overlay" id="bio-overlay">
+        <button class="shop-close" id="bio-close" style="position:absolute;right:10px;top:10px;width:26px;height:26px;background:#2a4a5a;color:#a0c0e0;border:1px solid #4a6a8a;cursor:pointer;font-size:14px;z-index:5;text-align:center;line-height:24px;">✕</button>
+        <h3>📖 БИОГРАФИЯ</h3>
+        <div id="bio-content"></div>
+    </div>
+
     <script>
         // ============================================================
+        // БАЗОВЫЕ НАСТРОЙКИ И СОСТОЯНИЯ
+        // ============================================================
+        const SAVE_KEY = 'dark_relics_save';
+
+        // ============================================================
         // ЛОКАЦИИ
-        // Добавляйте новые локации. Координаты X и Y НЕ указываются —
-        // они генерируются случайно при каждой загрузке.
-        // label — название на карте.
-        // mobType — ключ моба из MOBS (необязательно).
-        // mobCount — количество мобов (необязательно).
         // ============================================================
         const locationDefs = [
             { key: 'начальный_город', label: '🏰 Начальный Город' },
@@ -559,21 +696,18 @@ Dark Relics — браузерная RPG игра
             { key: 'подземелья', label: '🏚 Подземелья', mobType: 'dungeon', mobCount: 5 },
             { key: 'пустырь', label: '🏜 Пустырь', mobType: 'field', mobCount: 5 },
             { key: 'Эллады', label: '✨ Эллады', mobType: 'ellad', mobCount: 3 },
-            // Пример новой локации (раскомментируйте):
-            // { key: 'болото', label: '🪷 Болото', mobType: 'forest', mobCount: 7 },
         ];
 
-        // Случайные координаты для локаций генерируются здесь
         let locations = {};
 
         function randomLocations() {
             const newLocs = {};
             const usedPositions = [];
-            const MAP_W = 840; // ширина карты минус отступы
-            const MAP_H = 590; // высота карты минус отступы
-            const MIN_DIST = 130; // минимальное расстояние между локациями
+            const MAP_W = 840;
+            const MAP_H = 590;
+            const MIN_DIST = 130;
 
-            locationDefs.forEach((def, index) => {
+            locationDefs.forEach((def) => {
                 let x, y, tries = 0;
                 do {
                     x = 40 + Math.random() * MAP_W;
@@ -595,16 +729,6 @@ Dark Relics — браузерная RPG игра
 
         // ============================================================
         // МОБЫ
-        // Добавляйте новых мобов.
-        // name — имя.
-        // hp — здоровье.
-        // damage — урон за удар.
-        // attackSpeed — интервал атак (мс).
-        // expMin, expMax — опыт за убийство.
-        // gold — золото.
-        // cssClass — '' (жёлтый), 'cave-mob' (серый), 'dungeon-mob' (красный), 'field-mob' (бронзовый), 'mob-ellad' (сиреневый).
-        // drops — предметы:
-        //   name, type ('weapon'/'armor'), stat ('damage'/'hp'), value, percent (true/false), dropChance (0-100), desc.
         // ============================================================
         const mobData = {
             forest: {
@@ -647,20 +771,10 @@ Dark Relics — браузерная RPG игра
                     { name: 'Мантия Хранителя', type: 'armor', stat: 'hp', value: 250, percent: false, dropChance: 16, desc: 'ХП +250' },
                 ]
             },
-            // Пример нового моба:
-            // newMob: {
-            //     name: 'Новый моб', hp: 500, damage: 80, attackSpeed: 3500,
-            //     expMin: 100, expMax: 200, gold: 5000, cssClass: '',
-            //     drops: [
-            //         { name: 'Новый меч', type: 'weapon', stat: 'damage', value: 150, percent: false, dropChance: 30, desc: 'Урон 150' },
-            //     ]
-            // },
         };
 
         // ============================================================
         // МАГАЗИН
-        // name — название. price — цена. desc — описание.
-        // type — 'weapon' или 'armor'. stat — 'damage' или 'hp'. value — число.
         // ============================================================
         const shopItems = {
             weapons: [
@@ -675,13 +789,15 @@ Dark Relics — браузерная RPG игра
                 { name: 'Латный Доспех', price: 65000, desc: 'Доспех рыцарей империи.', type: 'armor', stat: 'hp', value: 180 },
                 { name: 'Доспех Дракона', price: 150000, desc: 'Чешуя древнего дракона.', type: 'armor', stat: 'hp', value: 350 },
                 { name: 'Мантия Невидимости', price: 200000, desc: 'Скрывает от глаз врагов.', type: 'armor', stat: 'hp', value: 500 },
+            ],
+            consumables: [
+                { name: 'Взрыв-зелье', price: 30000, desc: 'Для разрушения стен.', type: 'consumable', stat: 'explosive', value: 1 },
+                { name: 'Зелье лечения', price: 5000, desc: 'Восстанавливает 50% ХП.', type: 'consumable', stat: 'heal', value: 50 },
             ]
         };
 
         // ============================================================
         // ПРОМОКОДЫ
-        // Ключ — код. gold — золото. items — массив предметов.
-        // usedKey — ключ в localStorage (автоматически генерируется если не указан).
         // ============================================================
         const promoCodes = {
             'BETA': {
@@ -690,10 +806,7 @@ Dark Relics — браузерная RPG игра
                     { name: 'Меч тестера', type: 'weapon', stat: 'damage', value: 125, percent: false, dropChance: 100, desc: 'Урон 125' },
                 ],
             },
-            'START1000': {
-                gold: 1000,
-                items: [],
-            },
+            'START1000': { gold: 1000, items: [] },
             'FREESWORD': {
                 gold: 0,
                 items: [
@@ -707,54 +820,237 @@ Dark Relics — браузерная RPG игра
                     { name: 'Золотая броня', type: 'armor', stat: 'hp', value: 100, percent: false, dropChance: 100, desc: 'ХП +100' },
                 ],
             },
-            // Пример нового промокода:
-            // 'NEWCODE': {
-            //     gold: 99999,
-            //     items: [
-            //         { name: 'Меч богов', type: 'weapon', stat: 'damage', value: 999, percent: false, dropChance: 100, desc: 'Урон 999' },
-            //     ],
-            // },
         };
 
         // ============================================================
-        // СОХРАНЕНИЕ
+        // ДОСТИЖЕНИЯ
         // ============================================================
-        const SAVE_KEY = 'lineage2d_full_save';
+        const achievementDefs = [
+            { id: 'first_blood', name: 'Первая кровь', desc: 'Убить первого врага', check: s => s.totalKills >= 1 },
+            { id: 'hundred', name: 'Сотня', desc: 'Убить 100 врагов', check: s => s.totalKills >= 100 },
+            { id: 'thousand', name: 'Тысячник', desc: 'Убить 1000 врагов', check: s => s.totalKills >= 1000 },
+            { id: 'rich', name: 'Богач', desc: 'Накопить 50000 золота', check: s => s.gold >= 50000 },
+            { id: 'fifty', name: 'Полтинник', desc: 'Достичь 50 уровня', check: s => s.level >= 50 },
+            { id: 'hundred_lvl', name: 'Сотник', desc: 'Достичь 100 уровня', check: s => s.level >= 100 },
+            { id: 'legend', name: 'Легенда', desc: 'Достичь 150 уровня', check: s => s.level >= 150 },
+            { id: 'immortal', name: 'Бессмертный', desc: 'Достичь 200 уровня', check: s => s.level >= 200 },
+            { id: 'explorer', name: 'Исследователь', desc: 'Посетить все локации', check: s => s.visitedLocations && s.visitedLocations.length >= locationDefs.length },
+        ];
 
-        const defaultState = {
-            gold: 10000, damage: 4, level: 1, maxLevel: 225,
-            hp: 100, maxHp: 100, exp: 0, expToLevel: 400,
+        // ============================================================
+        // ТИТУЛЫ
+        // ============================================================
+        const titleDefs = [
+            { id: 'killer_1000', name: 'Убийца 1000', check: s => s.totalKills >= 1000 },
+            { id: 'hunter', name: 'Охотник', check: s => s.totalKills >= 100 },
+            { id: 'warrior', name: 'Воин', check: s => s.level >= 30 },
+            { id: 'immortal', name: 'Бессмертный', check: s => s.level >= 200 },
+            { id: 'beggar', name: 'Нищий', check: s => s.gold < 100 },
+            { id: 'millionaire', name: 'Миллионер', check: s => s.gold >= 1000000 },
+            { id: 'legend', name: 'Легенда', check: s => s.level >= 150 },
+            { id: 'night_hunter', name: 'Ночной Охотник', check: s => s.nightKills && s.nightKills >= 50 },
+        ];
+
+        // ============================================================
+        // ЛЕГЕНДАРНЫЕ КВЕСТЫ
+        // ============================================================
+        const legendaryQuests = [
+            {
+                id: 'scythe_of_death',
+                name: 'Коса Смерти',
+                desc: 'Найдите легендарную косу, дарующую вампиризм',
+                steps: [
+                    { id: 'step1', desc: 'Поговорить со Старцем в Подземельях', done: false },
+                    { id: 'step2', desc: 'Найти Призрака в Лесу ночью', done: false },
+                    { id: 'step3', desc: 'Убить 50 мобов в Лесу', done: false, progress: 0, max: 50 },
+                    { id: 'step4', desc: 'Получить ключ от Жнеца', done: false },
+                    { id: 'step5', desc: 'Победить Жнеца в Подземельях', done: false },
+                ],
+                reward: { name: 'Коса Смерти', type: 'weapon', stat: 'damage', value: 130, percent: false, desc: 'Урон 130, вампиризм 8%', legendary: true, vampirism: 8 },
+                completed: false,
+                active: false,
+                currentStep: 0,
+                levelReq: 40,
+                killCount: 0
+            },
+            {
+                id: 'shield_of_absolut',
+                name: 'Щит Абсолюта',
+                desc: 'Соберите легендарный щит, дарующий защиту',
+                steps: [
+                    { id: 'step1', desc: 'Найти стену в Пустыре (объект 🧱)', done: false },
+                    { id: 'step2', desc: 'Купить взрыв-зелье у Алхимика за 30000 золота', done: false },
+                    { id: 'step3', desc: 'Найти первую половину щита (вторая с Хранителя 5%)', done: false },
+                    { id: 'step4', desc: 'Соединить части у Кузнеца (нужен Редкий камень из Пещеры 💧)', done: false },
+                ],
+                reward: { name: 'Щит Абсолюта', type: 'armor', stat: 'hp', value: 200, percent: false, desc: 'ХП +200, шанс блока 15%', legendary: true, blockChance: 15 },
+                completed: false,
+                active: false,
+                currentStep: 0,
+                levelReq: 1,
+                hasShieldHalf: false,
+                hasRareStone: false
+            },
+            {
+                id: 'eye_of_foresight',
+                name: 'Око Предвидения',
+                desc: 'Обретите способность видеть скрытое',
+                steps: [
+                    { id: 'step1', desc: 'Найти Старца в Подземельях', done: false },
+                    { id: 'step2', desc: 'Принести Глаз Хранителя (Эллады 5%)', done: false },
+                    { id: 'step3', desc: 'Следовать за Старцем', done: false },
+                    { id: 'step4', desc: 'Победить Стража Знаний', done: false },
+                ],
+                reward: { name: 'Око Предвидения', type: 'special', stat: 'sight', value: 1, desc: 'Видит скрытые объекты', legendary: true },
+                completed: false,
+                active: false,
+                currentStep: 0,
+                levelReq: 1
+            },
+            {
+                id: 'ring_of_phoenix',
+                name: 'Кольцо Феникса',
+                desc: 'Обретите кольцо, воскрешающее из пепла',
+                steps: [
+                    { id: 'step1', desc: 'Найти пепел в Пустыре (🪶)', done: false },
+                    { id: 'step2', desc: 'Отнести пепел Алхимику', done: false },
+                    { id: 'step3', desc: 'Добыть Кровь Дракона (Эллады 5%)', done: false },
+                    { id: 'step4', desc: 'Получить Пепельное Кольцо', done: false },
+                    { id: 'step5', desc: 'Умереть с кольцом на локации с мобами', done: false },
+                ],
+                reward: { name: 'Кольцо Феникса', type: 'special', stat: 'revive', value: 1, desc: 'Воскрешение с 40% ХП раз в 30 мин', legendary: true },
+                completed: false,
+                active: false,
+                currentStep: 0,
+                levelReq: 1,
+                hasRing: false,
+                reviveCooldown: 0,
+                hasRevived: false
+            },
+            {
+                id: 'sword_of_split',
+                name: 'Меч Раскола',
+                desc: 'Соберите меч, игнорирующий броню',
+                steps: [
+                    { id: 'step1', desc: 'Найти осколок 1 (Лес 5%)', done: false },
+                    { id: 'step2', desc: 'Найти осколок 2 (сталактит 💧 в Пещере)', done: false },
+                    { id: 'step3', desc: 'Найти осколок 3 (Леди Вуаль на Пустыре)', done: false },
+                    { id: 'step4', desc: 'Соединить осколки у Кузнеца', done: false },
+                    { id: 'step5', desc: 'Убить 30 мобов Треснутым Мечом', done: false, progress: 0, max: 30 },
+                ],
+                reward: { name: 'Меч Раскола', type: 'weapon', stat: 'damage', value: 160, percent: false, desc: 'Урон 160, игнорирует 30% брони', legendary: true, armorPen: 30 },
+                completed: false,
+                active: false,
+                currentStep: 0,
+                levelReq: 1,
+                shards: 0,
+                killsWithCracked: 0
+            }
+        ];
+
+        // ============================================================
+        // СОСТОЯНИЕ ИГРЫ
+        // ============================================================
+        let gameState = {
+            gold: 10000,
+            damage: 4,
+            level: 1,
+            maxLevel: 225,
+            hp: 100,
+            maxHp: 100,
+            exp: 0,
+            expToLevel: 400,
             location: 'начальный_город',
             inventory: [],
             equipment: { weapon: null, armor: null },
-            isDay: true
+            isDay: true,
+            totalKills: 0,
+            totalDeaths: 0,
+            totalGoldEarned: 0,
+            bossKills: 0,
+            startDate: new Date().toISOString(),
+            visitedLocations: [],
+            nightKills: 0,
+            achievements: [],
+            titles: [],
+            quests: JSON.parse(JSON.stringify(legendaryQuests)),
+            hasExplosive: false,
+            hasShieldHalf: false,
+            hasRareStone: false,
+            hasPhoenixRing: false,
+            phoenixCooldown: 0,
+            hasCrackedSword: false,
+            crackedSwordKills: 0,
+            shardsFound: 0,
+            hasEyeSight: false,
         };
 
-        let gold = defaultState.gold;
-        let damage = defaultState.damage;
-        let level = defaultState.level;
-        let maxLevel = defaultState.maxLevel;
-        let hp = defaultState.hp;
-        let maxHp = defaultState.maxHp;
-        let exp = defaultState.exp;
-        let expToLevel = defaultState.expToLevel;
-        let currentLocation = defaultState.location;
-        let inventory = [];
-        let equipment = { weapon: null, armor: null };
-        let isDay = defaultState.isDay;
         let mobs = [];
         let selectedMob = null;
         let mobAttackIntervals = {};
         let dayTimer = null;
+        let weatherTimer = null;
+        let traderTimer = null;
+        let currentWeather = null;
+        let traderActive = false;
+        let traderLocation = null;
+        let traderTimerInterval = null;
+        let screenShakeTimer = null;
 
+        // ============================================================
+        // DOM
+        // ============================================================
+        const gameWorld = document.getElementById('game-world');
+        const worldScroll = document.getElementById('world-scroll');
+        const inventoryOverlay = document.getElementById('inventory-overlay');
+        const shopOverlay = document.getElementById('shop-overlay');
+        const targetPanel = document.getElementById('target-panel');
+        const shopCards = document.getElementById('shop-cards');
+        const promoOverlay = document.getElementById('promo-overlay');
+        const promoInput = document.getElementById('promo-input');
+        const promoResult = document.getElementById('promo-result');
+        const questDiary = document.getElementById('quest-diary');
+        const questList = document.getElementById('quest-list');
+        const bioOverlay = document.getElementById('bio-overlay');
+        const bioContent = document.getElementById('bio-content');
+
+        // ============================================================
+        // СОХРАНЕНИЕ
+        // ============================================================
         function saveGame() {
             try {
                 const saveData = {
-                    gold, damage, level, maxLevel, hp, maxHp, exp, expToLevel,
-                    location: currentLocation,
-                    inventory: JSON.parse(JSON.stringify(inventory)),
-                    equipment: JSON.parse(JSON.stringify(equipment)),
-                    isDay
+                    gold: gameState.gold,
+                    damage: gameState.damage,
+                    level: gameState.level,
+                    maxLevel: gameState.maxLevel,
+                    hp: gameState.hp,
+                    maxHp: gameState.maxHp,
+                    exp: gameState.exp,
+                    expToLevel: gameState.expToLevel,
+                    location: gameState.location,
+                    inventory: JSON.parse(JSON.stringify(gameState.inventory)),
+                    equipment: JSON.parse(JSON.stringify(gameState.equipment)),
+                    isDay: gameState.isDay,
+                    totalKills: gameState.totalKills,
+                    totalDeaths: gameState.totalDeaths,
+                    totalGoldEarned: gameState.totalGoldEarned,
+                    bossKills: gameState.bossKills,
+                    startDate: gameState.startDate,
+                    visitedLocations: gameState.visitedLocations,
+                    nightKills: gameState.nightKills,
+                    achievements: gameState.achievements,
+                    titles: gameState.titles,
+                    quests: JSON.parse(JSON.stringify(gameState.quests)),
+                    hasExplosive: gameState.hasExplosive,
+                    hasShieldHalf: gameState.hasShieldHalf,
+                    hasRareStone: gameState.hasRareStone,
+                    hasPhoenixRing: gameState.hasPhoenixRing,
+                    phoenixCooldown: gameState.phoenixCooldown,
+                    hasCrackedSword: gameState.hasCrackedSword,
+                    crackedSwordKills: gameState.crackedSwordKills,
+                    shardsFound: gameState.shardsFound,
+                    hasEyeSight: gameState.hasEyeSight,
                 };
                 localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
                 const dot = document.createElement('span');
@@ -770,61 +1066,71 @@ Dark Relics — браузерная RPG игра
                 if (!jsonStr) return false;
                 const data = JSON.parse(jsonStr);
                 if (!data || typeof data !== 'object') return false;
-                gold = data.gold ?? defaultState.gold;
-                damage = data.damage ?? defaultState.damage;
-                level = data.level ?? defaultState.level;
-                maxLevel = data.maxLevel ?? defaultState.maxLevel;
-                hp = data.hp ?? defaultState.hp;
-                maxHp = data.maxHp ?? defaultState.maxHp;
-                exp = data.exp ?? defaultState.exp;
-                expToLevel = data.expToLevel ?? defaultState.expToLevel;
-                currentLocation = data.location ?? defaultState.location;
-                inventory = Array.isArray(data.inventory) ? JSON.parse(JSON.stringify(data.inventory)) : [];
-                equipment = data.equipment ? JSON.parse(JSON.stringify(data.equipment)) : { weapon: null, armor: null };
-                isDay = data.isDay ?? true;
+                gameState.gold = data.gold ?? 10000;
+                gameState.damage = data.damage ?? 4;
+                gameState.level = data.level ?? 1;
+                gameState.maxLevel = data.maxLevel ?? 225;
+                gameState.hp = data.hp ?? 100;
+                gameState.maxHp = data.maxHp ?? 100;
+                gameState.exp = data.exp ?? 0;
+                gameState.expToLevel = data.expToLevel ?? 400;
+                gameState.location = data.location ?? 'начальный_город';
+                gameState.inventory = Array.isArray(data.inventory) ? JSON.parse(JSON.stringify(data.inventory)) : [];
+                gameState.equipment = data.equipment ? JSON.parse(JSON.stringify(data.equipment)) : { weapon: null, armor: null };
+                gameState.isDay = data.isDay ?? true;
+                gameState.totalKills = data.totalKills ?? 0;
+                gameState.totalDeaths = data.totalDeaths ?? 0;
+                gameState.totalGoldEarned = data.totalGoldEarned ?? 0;
+                gameState.bossKills = data.bossKills ?? 0;
+                gameState.startDate = data.startDate ?? new Date().toISOString();
+                gameState.visitedLocations = data.visitedLocations ?? [];
+                gameState.nightKills = data.nightKills ?? 0;
+                gameState.achievements = data.achievements ?? [];
+                gameState.titles = data.titles ?? [];
+                gameState.quests = data.quests ? JSON.parse(JSON.stringify(data.quests)) : JSON.parse(JSON.stringify(legendaryQuests));
+                gameState.hasExplosive = data.hasExplosive ?? false;
+                gameState.hasShieldHalf = data.hasShieldHalf ?? false;
+                gameState.hasRareStone = data.hasRareStone ?? false;
+                gameState.hasPhoenixRing = data.hasPhoenixRing ?? false;
+                gameState.phoenixCooldown = data.phoenixCooldown ?? 0;
+                gameState.hasCrackedSword = data.hasCrackedSword ?? false;
+                gameState.crackedSwordKills = data.crackedSwordKills ?? 0;
+                gameState.shardsFound = data.shardsFound ?? 0;
+                gameState.hasEyeSight = data.hasEyeSight ?? false;
                 return true;
             } catch (e) { return false; }
         }
 
         // ============================================================
-        // DOM
-        // ============================================================
-        const gameWorld = document.getElementById('game-world');
-        const worldScroll = document.getElementById('world-scroll');
-        const inventoryOverlay = document.getElementById('inventory-overlay');
-        const shopOverlay = document.getElementById('shop-overlay');
-        const targetPanel = document.getElementById('target-panel');
-        const shopCards = document.getElementById('shop-cards');
-        const promoOverlay = document.getElementById('promo-overlay');
-        const promoInput = document.getElementById('promo-input');
-        const promoResult = document.getElementById('promo-result');
-
-        // ============================================================
         // СТАТИСТИКА
         // ============================================================
         function updateStats() {
-            document.getElementById('stat-level').textContent = level;
-            document.getElementById('stat-hp').textContent = `${hp}/${maxHp}`;
-            document.getElementById('stat-exp').textContent = `${exp}/${expToLevel}`;
-            document.getElementById('stat-gold').textContent = gold.toLocaleString();
-            document.getElementById('stat-dmg').textContent = damage;
-            document.getElementById('hp-fill').style.width = (hp / maxHp * 100) + '%';
-            document.getElementById('exp-fill').style.width = (exp / expToLevel * 100) + '%';
-            document.getElementById('location-indicator').textContent = locations[currentLocation]?.label || '';
+            document.getElementById('stat-level').textContent = gameState.level;
+            document.getElementById('stat-hp').textContent = `${gameState.hp}/${gameState.maxHp}`;
+            document.getElementById('stat-exp').textContent = `${gameState.exp}/${gameState.expToLevel}`;
+            document.getElementById('stat-gold').textContent = gameState.gold.toLocaleString();
+            document.getElementById('stat-dmg').textContent = gameState.damage;
+            document.getElementById('hp-fill').style.width = (gameState.hp / gameState.maxHp * 100) + '%';
+            document.getElementById('exp-fill').style.width = (gameState.exp / gameState.expToLevel * 100) + '%';
+            document.getElementById('location-indicator').textContent = locations[gameState.location]?.label || '';
+            
+            // Проверка достижений и титулов
+            checkAchievements();
+            checkTitles();
         }
 
         function recalcStats() {
-            let baseHp = 100 + (level - 1) * 30;
-            if (equipment.armor) {
-                if (equipment.armor.percent) baseHp = Math.floor(baseHp * (1 + equipment.armor.value / 100));
-                else baseHp += equipment.armor.value;
+            let baseHp = 100 + (gameState.level - 1) * 30;
+            if (gameState.equipment.armor) {
+                if (gameState.equipment.armor.percent) baseHp = Math.floor(baseHp * (1 + gameState.equipment.armor.value / 100));
+                else baseHp += gameState.equipment.armor.value;
             }
-            maxHp = baseHp;
-            if (hp > maxHp) hp = maxHp;
-            let baseDmg = 4 + (level - 1) * 3;
-            if (equipment.weapon) baseDmg += equipment.weapon.value;
-            if (equipment.armor && equipment.armor.percent) baseDmg = Math.floor(baseDmg * (1 + equipment.armor.value / 100));
-            damage = baseDmg;
+            gameState.maxHp = baseHp;
+            if (gameState.hp > gameState.maxHp) gameState.hp = gameState.maxHp;
+            let baseDmg = 4 + (gameState.level - 1) * 3;
+            if (gameState.equipment.weapon) baseDmg += gameState.equipment.weapon.value;
+            if (gameState.equipment.armor && gameState.equipment.armor.percent) baseDmg = Math.floor(baseDmg * (1 + gameState.equipment.armor.value / 100));
+            gameState.damage = baseDmg;
         }
 
         function showMessage(text) {
@@ -835,14 +1141,57 @@ Dark Relics — браузерная RPG игра
             setTimeout(() => msg.remove(), 2000);
         }
 
-        function showDamage(x, y, dmg) {
+        function showDamage(x, y, dmg, isCrit = false) {
             const num = document.createElement('div');
             num.className = 'damage-num';
-            num.textContent = '-' + dmg;
+            num.textContent = (isCrit ? '💥 ' : '-') + dmg;
+            if (isCrit) num.style.fontSize = '18px';
             num.style.left = x + 'px';
             num.style.top = y + 'px';
             gameWorld.appendChild(num);
             setTimeout(() => num.remove(), 1200);
+            if (isCrit) screenShake();
+        }
+
+        function showHeal(x, y, amount) {
+            const num = document.createElement('div');
+            num.className = 'heal-num';
+            num.textContent = '+' + amount;
+            num.style.left = x + 'px';
+            num.style.top = y + 'px';
+            gameWorld.appendChild(num);
+            setTimeout(() => num.remove(), 1200);
+        }
+
+        function showGold(x, y, amount) {
+            const num = document.createElement('div');
+            num.className = 'gold-num';
+            num.textContent = '+' + amount + ' 💰';
+            num.style.left = x + 'px';
+            num.style.top = y + 'px';
+            gameWorld.appendChild(num);
+            setTimeout(() => num.remove(), 1200);
+        }
+
+        function screenShake() {
+            if (screenShakeTimer) return;
+            const container = worldScroll;
+            let intensity = 8;
+            let duration = 300;
+            let startTime = Date.now();
+            screenShakeTimer = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                if (elapsed >= duration) {
+                    container.style.transform = '';
+                    clearInterval(screenShakeTimer);
+                    screenShakeTimer = null;
+                    return;
+                }
+                const strength = intensity * (1 - elapsed / duration);
+                const dx = (Math.random() - 0.5) * strength * 2;
+                const dy = (Math.random() - 0.5) * strength * 2;
+                container.style.transform = `translate(${dx}px, ${dy}px)`;
+            }, 16);
         }
 
         // ============================================================
@@ -852,36 +1201,60 @@ Dark Relics — браузерная RPG игра
             inventoryOverlay.classList.toggle('visible');
             shopOverlay.classList.remove('visible');
             promoOverlay.classList.remove('visible');
+            questDiary.classList.remove('visible');
+            bioOverlay.classList.remove('visible');
             if (inventoryOverlay.classList.contains('visible')) renderInventory();
         }
 
         function renderInventory() {
             const invItems = document.getElementById('inv-items');
             invItems.innerHTML = '';
-            if (inventory.length === 0) {
+            if (gameState.inventory.length === 0) {
                 invItems.innerHTML = '<div style="color:#6a5a3a;text-align:center;padding:15px;">Пусто</div>';
             }
-            inventory.forEach((item, index) => {
+            gameState.inventory.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'inv-item';
-                const isEq = (equipment.weapon && equipment.weapon.name === item.name) ||
-                             (equipment.armor && equipment.armor.name === item.name);
+                const isEq = (gameState.equipment.weapon && gameState.equipment.weapon.name === item.name) ||
+                             (gameState.equipment.armor && gameState.equipment.armor.name === item.name);
                 if (isEq) div.classList.add('equipped');
-                div.innerHTML = `<span>${item.name}</span><span style="color:#8a7a4a;font-size:9px;">${item.type === 'weapon' ? '⚔️' : '🛡'}</span>`;
+                div.innerHTML = `<span>${item.name}</span><span style="color:#8a7a4a;font-size:9px;">${item.type === 'weapon' ? '⚔️' : item.type === 'armor' ? '🛡' : '🧪'}</span>`;
                 div.addEventListener('click', () => equipItem(index));
                 invItems.appendChild(div);
             });
-            document.getElementById('equip-weapon').textContent = 'Оружие: ' + (equipment.weapon ? equipment.weapon.name : 'нет');
-            document.getElementById('equip-armor').textContent = 'Броня: ' + (equipment.armor ? equipment.armor.name : 'нет');
+            document.getElementById('equip-weapon').textContent = 'Оружие: ' + (gameState.equipment.weapon ? gameState.equipment.weapon.name : 'нет');
+            document.getElementById('equip-armor').textContent = 'Броня: ' + (gameState.equipment.armor ? gameState.equipment.armor.name : 'нет');
         }
 
         function equipItem(index) {
-            const item = inventory[index];
+            const item = gameState.inventory[index];
             if (!item) return;
             if (item.type === 'weapon') {
-                equipment.weapon = (equipment.weapon && equipment.weapon.name === item.name) ? null : item;
-            } else {
-                equipment.armor = (equipment.armor && equipment.armor.name === item.name) ? null : item;
+                gameState.equipment.weapon = (gameState.equipment.weapon && gameState.equipment.weapon.name === item.name) ? null : item;
+            } else if (item.type === 'armor') {
+                gameState.equipment.armor = (gameState.equipment.armor && gameState.equipment.armor.name === item.name) ? null : item;
+            } else if (item.type === 'consumable') {
+                useConsumable(item, index);
+                return;
+            } else if (item.type === 'special') {
+                // Special items handling
+                if (item.stat === 'sight') {
+                    gameState.hasEyeSight = true;
+                    showMessage('👁 Око Предвидения активировано!');
+                    gameState.inventory.splice(index, 1);
+                    saveGame();
+                    renderInventory();
+                    return;
+                }
+                if (item.stat === 'revive') {
+                    gameState.hasPhoenixRing = true;
+                    gameState.phoenixCooldown = Date.now() + 1800000; // 30 min cooldown
+                    showMessage('🔥 Кольцо Феникса экипировано!');
+                    gameState.inventory.splice(index, 1);
+                    saveGame();
+                    renderInventory();
+                    return;
+                }
             }
             recalcStats();
             renderInventory();
@@ -889,8 +1262,31 @@ Dark Relics — браузерная RPG игра
             saveGame();
         }
 
+        function useConsumable(item, index) {
+            if (item.stat === 'heal') {
+                const healAmt = Math.floor(gameState.maxHp * 0.5);
+                gameState.hp = Math.min(gameState.maxHp, gameState.hp + healAmt);
+                showHeal(400, 300, healAmt);
+                gameState.inventory.splice(index, 1);
+                updateStats();
+                saveGame();
+                renderInventory();
+                showMessage('❤️ Зелье лечения использовано!');
+                return;
+            }
+            if (item.stat === 'explosive') {
+                gameState.hasExplosive = true;
+                gameState.inventory.splice(index, 1);
+                saveGame();
+                renderInventory();
+                showMessage('💥 Взрыв-зелье получено!');
+                checkLegendaryQuests();
+                return;
+            }
+        }
+
         function addToInventory(item) {
-            inventory.push(item);
+            gameState.inventory.push(item);
             if (inventoryOverlay.classList.contains('visible')) renderInventory();
             saveGame();
         }
@@ -902,10 +1298,13 @@ Dark Relics — браузерная RPG игра
             shopOverlay.classList.toggle('visible');
             inventoryOverlay.classList.remove('visible');
             promoOverlay.classList.remove('visible');
+            questDiary.classList.remove('visible');
+            bioOverlay.classList.remove('visible');
             if (shopOverlay.classList.contains('visible')) {
                 renderShop('weapons');
                 document.querySelector('.shop-tabs button[data-tab="weapons"]').classList.add('active');
                 document.querySelector('.shop-tabs button[data-tab="armor"]').classList.remove('active');
+                document.querySelector('.shop-tabs button[data-tab="consumables"]').classList.remove('active');
             }
         }
 
@@ -926,12 +1325,17 @@ Dark Relics — браузерная RPG игра
         }
 
         function buyItem(item) {
-            if (gold < item.price) { showMessage('Недостаточно золота!'); return; }
-            gold -= item.price;
-            addToInventory({ name: item.name, type: item.type, stat: item.stat, value: item.value, percent: false, desc: item.desc });
+            if (gameState.gold < item.price) { showMessage('Недостаточно золота!'); return; }
+            gameState.gold -= item.price;
+            if (item.type === 'consumable') {
+                addToInventory({ name: item.name, type: item.type, stat: item.stat, value: item.value, desc: item.desc });
+            } else {
+                addToInventory({ name: item.name, type: item.type, stat: item.stat, value: item.value, percent: false, desc: item.desc });
+            }
             updateStats();
             saveGame();
             showMessage(`Куплено: ${item.name}`);
+            checkLegendaryQuests();
         }
 
         // ============================================================
@@ -941,6 +1345,8 @@ Dark Relics — браузерная RPG игра
             promoOverlay.classList.toggle('visible');
             inventoryOverlay.classList.remove('visible');
             shopOverlay.classList.remove('visible');
+            questDiary.classList.remove('visible');
+            bioOverlay.classList.remove('visible');
             promoInput.value = '';
             promoResult.textContent = '';
             if (promoOverlay.classList.contains('visible')) promoInput.focus();
@@ -954,7 +1360,7 @@ Dark Relics — браузерная RPG игра
             const usedKey = promo.usedKey || ('promo_' + code);
             if (localStorage.getItem(usedKey)) { promoResult.textContent = 'Код уже использован'; return; }
             localStorage.setItem(usedKey, '1');
-            if (promo.gold) { gold += promo.gold; }
+            if (promo.gold) { gameState.gold += promo.gold; }
             if (promo.items) {
                 promo.items.forEach(item => addToInventory({ ...item }));
             }
@@ -963,6 +1369,277 @@ Dark Relics — браузерная RPG игра
             promoResult.textContent = '✅ Код активирован!';
             promoInput.value = '';
             setTimeout(() => { promoOverlay.classList.remove('visible'); }, 1500);
+        }
+
+        // ============================================================
+        // КВЕСТЫ
+        // ============================================================
+        function toggleQuests() {
+            questDiary.classList.toggle('visible');
+            inventoryOverlay.classList.remove('visible');
+            shopOverlay.classList.remove('visible');
+            promoOverlay.classList.remove('visible');
+            bioOverlay.classList.remove('visible');
+            if (questDiary.classList.contains('visible')) renderQuests();
+        }
+
+        function renderQuests() {
+            questList.innerHTML = '';
+            const activeQuests = gameState.quests.filter(q => q.active || q.completed);
+            if (activeQuests.length === 0) {
+                questList.innerHTML = '<div style="color:#6a5a3a;text-align:center;padding:15px;">Нет активных квестов</div>';
+                return;
+            }
+            activeQuests.forEach(q => {
+                const div = document.createElement('div');
+                div.className = 'quest-item';
+                let status = q.completed ? '✅ ЗАВЕРШЕН' : '⏳ В ПРОГРЕССЕ';
+                let stepsHtml = '';
+                if (!q.completed) {
+                    stepsHtml = q.steps.map((s, i) => {
+                        const done = s.done ? '✅' : '⬜';
+                        let progress = '';
+                        if (s.progress !== undefined && s.max) {
+                            progress = ` (${s.progress}/${s.max})`;
+                        }
+                        return `<div style="font-size:9px;color:#8a7a6a;padding-left:10px;">${done} ${s.desc}${progress}</div>`;
+                    }).join('');
+                }
+                div.innerHTML = `
+                    <div class="qname">${q.name}</div>
+                    <div class="qdesc" style="font-size:9px;color:#8a7a6a;">${q.desc}</div>
+                    <div class="qstatus">${status}</div>
+                    ${stepsHtml}
+                    ${q.completed ? `<div style="color:#80ff80;font-size:10px;">🏆 Награда: ${q.reward.name}</div>` : ''}
+                `;
+                questList.appendChild(div);
+            });
+        }
+
+        function checkLegendaryQuests() {
+            // Проверка прогресса легендарных квестов
+            gameState.quests.forEach(q => {
+                if (q.completed || !q.active) return;
+                if (gameState.level < q.levelReq) return;
+
+                // Коса Смерти
+                if (q.id === 'scythe_of_death') {
+                    // Step 1: Поговорить со Старцем - проверяем при клике на NPC в подземельях
+                    // Step 2: Найти Призрака в Лесу ночью - проверяем при клике на Призрака
+                    // Step 3: Убить 50 мобов в Лесу
+                    if (q.currentStep >= 2 && !q.steps[2].done) {
+                        // Считаем убийства в лесу
+                        const forestKills = q.killCount || 0;
+                        if (forestKills >= 50) {
+                            q.steps[2].done = true;
+                            q.steps[2].progress = 50;
+                            q.currentStep = 3;
+                            showMessage('✅ Лес очищен! Идите к Жнецу.');
+                            saveGame();
+                        }
+                    }
+                    // Step 4: Получить ключ - автоматически после убийства Жнеца
+                }
+
+                // Щит Абсолюта
+                if (q.id === 'shield_of_absolut') {
+                    if (!q.steps[0].done && gameState.hasExplosive) {
+                        q.steps[0].done = true;
+                        q.currentStep = 1;
+                        showMessage('✅ Стена разрушена! Идите к Алхимику.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 1 && !q.steps[1].done && gameState.hasShieldHalf) {
+                        q.steps[1].done = true;
+                        q.currentStep = 2;
+                        showMessage('✅ Половина щита найдена! Идите к Кузнецу.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 2 && !q.steps[2].done && gameState.hasRareStone) {
+                        q.steps[2].done = true;
+                        q.currentStep = 3;
+                        showMessage('✅ Редкий камень получен! Идите к Кузнецу.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 3 && !q.steps[3].done && gameState.hasExplosive && gameState.hasShieldHalf && gameState.hasRareStone) {
+                        // Соединение у Кузнеца - проверяем при взаимодействии
+                    }
+                }
+
+                // Око Предвидения
+                if (q.id === 'eye_of_foresight') {
+                    if (!q.steps[0].done && gameState.hasEyeSight) {
+                        q.steps[0].done = true;
+                        q.currentStep = 1;
+                        showMessage('✅ Старец найден! Ищите Глаз Хранителя.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 1 && !q.steps[1].done) {
+                        // Проверяем наличие глаза в инвентаре
+                        const hasEye = gameState.inventory.some(i => i.name === 'Глаз Хранителя');
+                        if (hasEye) {
+                            q.steps[1].done = true;
+                            q.currentStep = 2;
+                            showMessage('✅ Глаз Хранителя получен! Следуйте за Старцем.');
+                            saveGame();
+                        }
+                    }
+                }
+
+                // Кольцо Феникса
+                if (q.id === 'ring_of_phoenix') {
+                    if (!q.steps[0].done && gameState.hasPhoenixRing) {
+                        q.steps[0].done = true;
+                        q.currentStep = 1;
+                        showMessage('✅ Пепел найден! Несите Алхимику.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 1 && !q.steps[1].done && gameState.hasPhoenixRing) {
+                        q.steps[1].done = true;
+                        q.currentStep = 2;
+                        showMessage('✅ Пепел у Алхимика! Добудьте Кровь Дракона.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 2 && !q.steps[2].done) {
+                        const hasBlood = gameState.inventory.some(i => i.name === 'Кровь Дракона');
+                        if (hasBlood) {
+                            q.steps[2].done = true;
+                            q.currentStep = 3;
+                            showMessage('✅ Кровь Дракона получена! Получите кольцо.');
+                            saveGame();
+                        }
+                    }
+                    if (q.currentStep >= 3 && !q.steps[3].done && gameState.hasPhoenixRing) {
+                        q.steps[3].done = true;
+                        q.currentStep = 4;
+                        showMessage('✅ Пепельное Кольцо получено! Умрите с ним.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 4 && !q.steps[4].done && gameState.hasRevived) {
+                        q.steps[4].done = true;
+                        completeLegendaryQuest(q);
+                    }
+                }
+
+                // Меч Раскола
+                if (q.id === 'sword_of_split') {
+                    if (!q.steps[0].done && gameState.shardsFound >= 1) {
+                        q.steps[0].done = true;
+                        q.currentStep = 1;
+                        showMessage('✅ Осколок 1 найден! Ищите остальные.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 1 && !q.steps[1].done && gameState.shardsFound >= 2) {
+                        q.steps[1].done = true;
+                        q.currentStep = 2;
+                        showMessage('✅ Осколок 2 найден! Ищите третий.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 2 && !q.steps[2].done && gameState.shardsFound >= 3) {
+                        q.steps[2].done = true;
+                        q.currentStep = 3;
+                        showMessage('✅ Все осколки собраны! Идите к Кузнецу.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 3 && !q.steps[3].done && gameState.hasCrackedSword) {
+                        q.steps[3].done = true;
+                        q.currentStep = 4;
+                        showMessage('✅ Треснутый Меч получен! Убейте 30 мобов.');
+                        saveGame();
+                    }
+                    if (q.currentStep >= 4 && !q.steps[4].done) {
+                        if (gameState.crackedSwordKills >= 30) {
+                            q.steps[4].done = true;
+                            q.steps[4].progress = 30;
+                            completeLegendaryQuest(q);
+                        }
+                    }
+                }
+            });
+            updateStats();
+            if (questDiary.classList.contains('visible')) renderQuests();
+        }
+
+        function completeLegendaryQuest(q) {
+            q.completed = true;
+            q.active = false;
+            // Добавляем награду в инвентарь
+            if (q.reward) {
+                addToInventory({ ...q.reward });
+                showMessage(`🏆 Квест завершён! Получено: ${q.reward.name}`);
+            }
+            saveGame();
+            if (questDiary.classList.contains('visible')) renderQuests();
+        }
+
+        function startQuest(qId) {
+            const q = gameState.quests.find(q => q.id === qId);
+            if (!q || q.active || q.completed) return;
+            if (gameState.level < q.levelReq) {
+                showMessage(`Требуется ${q.levelReq} уровень!`);
+                return;
+            }
+            q.active = true;
+            q.currentStep = 0;
+            q.steps[0].done = false;
+            showMessage(`📜 Квест начат: ${q.name}`);
+            saveGame();
+            if (questDiary.classList.contains('visible')) renderQuests();
+        }
+
+        // ============================================================
+        // БИОГРАФИЯ
+        // ============================================================
+        function toggleBio() {
+            bioOverlay.classList.toggle('visible');
+            inventoryOverlay.classList.remove('visible');
+            shopOverlay.classList.remove('visible');
+            promoOverlay.classList.remove('visible');
+            questDiary.classList.remove('visible');
+            if (bioOverlay.classList.contains('visible')) renderBio();
+        }
+
+        function renderBio() {
+            const date = new Date(gameState.startDate);
+            const now = new Date();
+            const days = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            bioContent.innerHTML = `
+                <div class="bio-stat">📅 Создан: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}</div>
+                <div class="bio-stat">📆 Дней в игре: ${days}</div>
+                <div class="bio-stat">💀 Убийств: ${gameState.totalKills}</div>
+                <div class="bio-stat">⚰️ Смертей: ${gameState.totalDeaths}</div>
+                <div class="bio-stat">👑 Боссов убито: ${gameState.bossKills}</div>
+                <div class="bio-stat">💰 Золота заработано: ${gameState.totalGoldEarned.toLocaleString()}</div>
+                <div class="bio-stat">🏆 Достижений: ${gameState.achievements.length}/${achievementDefs.length}</div>
+                <div class="bio-stat">👑 Титулов: ${gameState.titles.length}/${titleDefs.length}</div>
+                <div class="bio-stat">📍 Посещено локаций: ${gameState.visitedLocations ? gameState.visitedLocations.length : 0}/${locationDefs.length}</div>
+                <div class="bio-stat">🌙 Ночных убийств: ${gameState.nightKills}</div>
+            `;
+        }
+
+        // ============================================================
+        // ДОСТИЖЕНИЯ
+        // ============================================================
+        function checkAchievements() {
+            achievementDefs.forEach(def => {
+                if (gameState.achievements.includes(def.id)) return;
+                if (def.check(gameState)) {
+                    gameState.achievements.push(def.id);
+                    showMessage(`🏆 Достижение: ${def.name}!`);
+                    saveGame();
+                }
+            });
+        }
+
+        function checkTitles() {
+            titleDefs.forEach(def => {
+                if (gameState.titles.includes(def.id)) return;
+                if (def.check(gameState)) {
+                    gameState.titles.push(def.id);
+                    showMessage(`👑 Титул получен: ${def.name}!`);
+                    saveGame();
+                }
+            });
         }
 
         // ============================================================
@@ -984,12 +1661,46 @@ Dark Relics — браузерная RPG игра
                     damage: data.damage, attackSpeed: data.attackSpeed,
                     expMin: data.expMin, expMax: data.expMax, gold: data.gold,
                     drops: data.drops, cssClass: data.cssClass || '', name: data.name,
-                    alive: true, moveInterval: null
+                    alive: true, moveInterval: null, isBoss: false
                 };
                 mobs.push(mob);
                 renderMobElement(mob);
                 startMobMovement(mob, locationKey);
             }
+            // Добавляем босса для подземелий
+            if (locationKey === 'подземелья') {
+                addBoss();
+            }
+        }
+
+        function addBoss() {
+            const loc = locations['подземелья'];
+            if (!loc) return;
+            const boss = {
+                id: 'boss_' + Date.now(),
+                type: 'boss',
+                x: loc.x + 50,
+                y: loc.y - 30,
+                hp: 1500,
+                maxHp: 1500,
+                damage: 120,
+                attackSpeed: 2500,
+                expMin: 1000,
+                expMax: 2000,
+                gold: 50000,
+                drops: [
+                    { name: 'Ключ Жнеца', type: 'special', stat: 'key', value: 1, dropChance: 100, desc: 'Ключ от Жнеца' },
+                    { name: 'Меч Тёмного Рыцаря', type: 'weapon', stat: 'damage', value: 120, percent: false, dropChance: 30, desc: 'Урон 120' },
+                ],
+                cssClass: 'dungeon-mob',
+                name: '👑 Жнец (БОСС)',
+                alive: true,
+                moveInterval: null,
+                isBoss: true
+            };
+            mobs.push(boss);
+            renderMobElement(boss);
+            startMobMovement(boss, 'подземелья');
         }
 
         function clearMobs() {
@@ -1006,10 +1717,11 @@ Dark Relics — браузерная RPG игра
         function renderMobElement(mob) {
             const el = document.createElement('div');
             el.className = 'mob ' + mob.cssClass;
+            if (mob.isBoss) el.style.width = '40px';
             el.id = mob.id;
             el.style.left = mob.x + 'px';
             el.style.top = mob.y + 'px';
-            el.textContent = mob.name.charAt(0);
+            el.textContent = mob.isBoss ? '👑' : mob.name.charAt(0);
             el.addEventListener('click', (e) => { e.stopPropagation(); selectMobFunc(mob); });
             el.addEventListener('touchend', (e) => { e.preventDefault(); selectMobFunc(mob); });
             gameWorld.appendChild(el);
@@ -1032,7 +1744,7 @@ Dark Relics — браузерная RPG игра
             const el = document.getElementById(mob.id);
             if (el) el.classList.add('selected');
             targetPanel.classList.add('visible');
-            document.getElementById('target-name').textContent = mob.name;
+            document.getElementById('target-name').textContent = mob.isBoss ? '👑 ' + mob.name : mob.name;
             document.getElementById('target-hp').textContent = mob.hp + '/' + mob.maxHp;
             document.getElementById('target-dmg').textContent = mob.damage;
             document.getElementById('target-reward').textContent = mob.gold.toLocaleString() + ' зол';
@@ -1050,11 +1762,68 @@ Dark Relics — браузерная RPG игра
 
         function attackMob() {
             if (!selectedMob || !selectedMob.alive) return;
-            selectedMob.hp -= damage;
+            
+            // Бой с улучшениями
+            let totalDamage = gameState.damage;
+            let isCrit = false;
+            let isMiss = false;
+            let isBlocked = false;
+
+            // Проверка промаха (5%)
+            if (Math.random() < 0.05) {
+                isMiss = true;
+            }
+
+            // Проверка блока (15% если есть щит)
+            const hasShield = gameState.equipment.armor && gameState.equipment.armor.blockChance;
+            if (!isMiss && hasShield && Math.random() < 0.15) {
+                isBlocked = true;
+            }
+
+            if (isMiss) {
+                showMessage('❌ Промах!');
+                return;
+            }
+
+            if (isBlocked) {
+                showMessage('🛡 Блок!');
+                return;
+            }
+
+            // Крит (10%, х2.5)
+            if (Math.random() < 0.1) {
+                isCrit = true;
+                totalDamage = Math.floor(totalDamage * 2.5);
+            }
+
+            // Игнорирование брони (30% если есть меч с бронепробитием)
+            let armorPen = 0;
+            if (gameState.equipment.weapon && gameState.equipment.weapon.armorPen) {
+                armorPen = gameState.equipment.weapon.armorPen;
+            }
+
+            // Применяем урон
+            selectedMob.hp -= totalDamage;
             const el = document.getElementById(selectedMob.id);
-            if (el) showDamage(selectedMob.x + 10, selectedMob.y - 10, damage);
+            if (el) showDamage(selectedMob.x + 10, selectedMob.y - 10, totalDamage, isCrit);
+            
+            // Вампиризм (8% от Косы Смерти)
+            if (gameState.equipment.weapon && gameState.equipment.weapon.vampirism) {
+                const vampHeal = Math.floor(totalDamage * (gameState.equipment.weapon.vampirism / 100));
+                if (vampHeal > 0) {
+                    gameState.hp = Math.min(gameState.maxHp, gameState.hp + vampHeal);
+                    if (el) showHeal(selectedMob.x - 10, selectedMob.y - 20, vampHeal);
+                }
+            }
+
             document.getElementById('target-hp').textContent = selectedMob.hp + '/' + selectedMob.maxHp;
-            if (selectedMob.hp <= 0) { killMob(selectedMob); return; }
+            
+            if (selectedMob.hp <= 0) {
+                killMob(selectedMob);
+                return;
+            }
+
+            // Моб атакует в ответ
             if (!mobAttackIntervals[selectedMob.id]) {
                 mobAttackIntervals[selectedMob.id] = setInterval(() => {
                     if (!selectedMob || !selectedMob.alive || !mobs.find(m => m.id === selectedMob?.id)) {
@@ -1062,13 +1831,43 @@ Dark Relics — браузерная RPG игра
                         delete mobAttackIntervals[selectedMob?.id];
                         return;
                     }
-                    hp -= selectedMob.damage;
-                    if (hp < 0) hp = 0;
+                    // Моб атакует (шанс промаха 5%)
+                    if (Math.random() < 0.05) {
+                        showMessage('❌ Враг промахнулся!');
+                        return;
+                    }
+                    const mobDmg = Math.floor(selectedMob.damage * (0.9 + Math.random() * 0.2));
+                    gameState.hp -= mobDmg;
+                    if (gameState.hp < 0) gameState.hp = 0;
                     updateStats(); saveGame();
-                    showMessage(`Враг атакует! -${selectedMob.damage} HP`);
-                    if (hp <= 0) playerDeath();
+                    showMessage(`Враг атакует! -${mobDmg} HP`);
+                    if (gameState.hp <= 0) playerDeath();
                 }, selectedMob.attackSpeed);
             }
+            
+            // Проверка квестов
+            if (selectedMob.type === 'forest' && gameState.location === 'лес') {
+                const q = gameState.quests.find(q => q.id === 'scythe_of_death' && q.active && !q.completed);
+                if (q && q.currentStep >= 2) {
+                    q.killCount = (q.killCount || 0) + 1;
+                    q.steps[2].progress = q.killCount;
+                    checkLegendaryQuests();
+                    saveGame();
+                }
+            }
+            if (gameState.hasCrackedSword) {
+                gameState.crackedSwordKills++;
+                checkLegendaryQuests();
+                saveGame();
+            }
+            if (!gameState.isDay) {
+                gameState.nightKills = (gameState.nightKills || 0) + 1;
+                checkTitles();
+                saveGame();
+            }
+
+            updateStats();
+            saveGame();
         }
 
         function killMob(mob) {
@@ -1076,14 +1875,40 @@ Dark Relics — браузерная RPG игра
             if (mob.moveInterval) clearInterval(mob.moveInterval);
             if (mobAttackIntervals[mob.id]) { clearInterval(mobAttackIntervals[mob.id]); delete mobAttackIntervals[mob.id]; }
             const el = document.getElementById(mob.id); if (el) el.remove();
-            exp += Math.floor(Math.random() * (mob.expMax - mob.expMin + 1)) + mob.expMin;
-            gold += mob.gold;
+            
+            const expGain = Math.floor(Math.random() * (mob.expMax - mob.expMin + 1)) + mob.expMin;
+            gameState.exp += expGain;
+            gameState.gold += mob.gold;
+            gameState.totalKills++;
+            gameState.totalGoldEarned += mob.gold;
+            
+            if (mob.isBoss) {
+                gameState.bossKills++;
+                showMessage(`👑 БОСС ПОБЕЖДЁН! +${mob.gold} золота`);
+                // Проверка ключа для квеста
+                const q = gameState.quests.find(q => q.id === 'scythe_of_death' && q.active && !q.completed);
+                if (q && q.currentStep === 3) {
+                    q.steps[3].done = true;
+                    q.currentStep = 4;
+                    showMessage('🔑 Ключ получен! Идите к Жнецу.');
+                    saveGame();
+                }
+            } else {
+                showGold(mob.x, mob.y - 20, mob.gold);
+                showMessage(`Побеждён! +${expGain} опыта, +${mob.gold} золота`);
+            }
+
             checkDrops(mob);
             if (selectedMob && selectedMob.id === mob.id) deselectMob();
             checkLevelUp();
-            updateStats(); saveGame();
-            showMessage(`Побеждён! +${mob.gold} золота`);
+            updateStats(); 
+            saveGame();
             mobs = mobs.filter(m => m.id !== mob.id);
+            
+            // Проверяем достижения
+            checkAchievements();
+            checkTitles();
+            checkLegendaryQuests();
         }
 
         function checkDrops(mob) {
@@ -1091,25 +1916,164 @@ Dark Relics — браузерная RPG игра
                 if (Math.random() * 100 < drop.dropChance) {
                     addToInventory({ name: drop.name, type: drop.type, stat: drop.stat, value: drop.value, percent: drop.percent || false, desc: drop.desc });
                     showMessage(`🎁 Дроп: ${drop.name}!`);
+                    
+                    // Проверка особых дропов
+                    if (drop.name === 'Глаз Хранителя') {
+                        checkLegendaryQuests();
+                    }
+                    if (drop.name === 'Кровь Дракона') {
+                        checkLegendaryQuests();
+                    }
+                    if (drop.name === 'Ключ Жнеца') {
+                        const q = gameState.quests.find(q => q.id === 'scythe_of_death' && q.active && !q.completed);
+                        if (q && q.currentStep === 3) {
+                            q.steps[3].done = true;
+                            q.currentStep = 4;
+                            showMessage('🔑 Ключ получен! Идите к Жнецу.');
+                            saveGame();
+                        }
+                    }
+                    if (drop.name === 'Осколок меча' || drop.name.includes('Осколок')) {
+                        gameState.shardsFound = (gameState.shardsFound || 0) + 1;
+                        checkLegendaryQuests();
+                    }
                 }
             });
+            // Проверка дропа с Хранителя (5% для второй половины щита)
+            if (mob.type === 'ellad' && Math.random() < 0.05) {
+                gameState.hasShieldHalf = true;
+                showMessage('🛡 Найдена вторая половина Щита Абсолюта!');
+                checkLegendaryQuests();
+                saveGame();
+            }
         }
 
         function checkLevelUp() {
-            while (exp >= expToLevel && level < maxLevel) {
-                exp -= expToLevel; level++;
-                expToLevel = Math.floor(expToLevel * 1.4);
-                hp = maxHp; recalcStats(); updateStats(); saveGame();
-                showMessage(`🎉 Уровень ${level}!`);
+            while (gameState.exp >= gameState.expToLevel && gameState.level < gameState.maxLevel) {
+                gameState.exp -= gameState.expToLevel;
+                gameState.level++;
+                gameState.expToLevel = Math.floor(gameState.expToLevel * 1.4);
+                gameState.hp = gameState.maxHp;
+                recalcStats();
+                updateStats();
+                saveGame();
+                showMessage(`🎉 Уровень ${gameState.level}!`);
+                checkAchievements();
+                checkTitles();
+                checkLegendaryQuests();
             }
         }
 
         function playerDeath() {
+            gameState.totalDeaths++;
+            
+            // Проверка Кольца Феникса
+            if (gameState.hasPhoenixRing && Date.now() > gameState.phoenixCooldown) {
+                const healAmt = Math.floor(gameState.maxHp * 0.4);
+                gameState.hp = healAmt;
+                gameState.hasRevived = true;
+                gameState.phoenixCooldown = Date.now() + 1800000; // 30 min cooldown
+                showMessage('🔥 Кольцо Феникса воскресило вас! (40% ХП)');
+                checkLegendaryQuests();
+                updateStats();
+                saveGame();
+                return;
+            }
+            
             showMessage('💀 Вы погибли...');
-            hp = Math.floor(maxHp / 2);
-            gold = Math.floor(gold * 0.9);
-            deselectMob(); updateStats(); saveGame();
+            gameState.hp = Math.floor(gameState.maxHp / 2);
+            gameState.gold = Math.floor(gameState.gold * 0.9);
+            deselectMob();
+            updateStats();
+            saveGame();
             teleportTo('начальный_город');
+        }
+
+        // ============================================================
+        // ПОГОДА
+        // ============================================================
+        function startWeatherCycle() {
+            if (weatherTimer) clearTimeout(weatherTimer);
+            weatherTimer = setTimeout(() => {
+                const types = ['дождь', 'заражение'];
+                const type = types[Math.floor(Math.random() * types.length)];
+                currentWeather = type;
+                if (type === 'дождь') {
+                    showMessage('🌧 Дождь! Шанс дропа увеличен х3!');
+                } else {
+                    showMessage('☣ Заражение! Шанс дропа увеличен х3!');
+                }
+                // Эффект погоды
+                gameWorld.style.filter = type === 'дождь' ? 'brightness(0.85) saturate(0.9)' : 'brightness(0.9) saturate(1.2)';
+                
+                setTimeout(() => {
+                    currentWeather = null;
+                    gameWorld.style.filter = '';
+                    showMessage('🌤 Погода нормализовалась.');
+                }, 30000);
+                
+                startWeatherCycle();
+            }, 300000); // каждые 5 минут
+        }
+
+        // ============================================================
+        // БРОДЯЧИЙ ТОРГОВЕЦ
+        // ============================================================
+        function startTraderCycle() {
+            if (traderTimer) clearTimeout(traderTimer);
+            const delay = 1800000 + Math.random() * 1800000; // 30-60 минут
+            traderTimer = setTimeout(() => {
+                spawnTrader();
+                startTraderCycle();
+            }, delay);
+        }
+
+        function spawnTrader() {
+            const locKeys = Object.keys(locations);
+            const randomLoc = locKeys[Math.floor(Math.random() * locKeys.length)];
+            traderLocation = randomLoc;
+            traderActive = true;
+            
+            const loc = locations[randomLoc];
+            const traderEl = document.createElement('div');
+            traderEl.className = 'npc';
+            traderEl.style.left = (loc.x + 60) + 'px';
+            traderEl.style.top = (loc.y - 40) + 'px';
+            traderEl.textContent = '🧳';
+            traderEl.id = 'trader';
+            traderEl.title = 'Бродячий торговец';
+            traderEl.addEventListener('click', () => openTraderShop());
+            traderEl.addEventListener('touchend', (e) => { e.preventDefault(); openTraderShop(); });
+            gameWorld.appendChild(traderEl);
+            
+            showMessage(`🧳 Бродячий торговец появился в ${loc.label}!`);
+            
+            // Убираем торговца через 5 минут
+            setTimeout(() => {
+                const el = document.getElementById('trader');
+                if (el) el.remove();
+                traderActive = false;
+                showMessage('🧳 Торговец ушёл.');
+            }, 300000);
+        }
+
+        function openTraderShop() {
+            if (!traderActive) return;
+            const items = [
+                { name: 'Свиток удачи', type: 'consumable', stat: 'luck', value: 1, desc: 'Увеличивает шанс дропа', price: 15000 },
+                { name: 'Мешок с лутом', type: 'consumable', stat: 'lootbag', value: 1, desc: 'Случайный предмет', price: 25000 },
+                { name: 'Зелье маны', type: 'consumable', stat: 'mana', value: 50, desc: 'Восстанавливает 50 маны', price: 8000 },
+            ];
+            const randomItem = items[Math.floor(Math.random() * items.length)];
+            if (gameState.gold < randomItem.price) {
+                showMessage('Недостаточно золота для покупки!');
+                return;
+            }
+            gameState.gold -= randomItem.price;
+            addToInventory({ name: randomItem.name, type: randomItem.type, stat: randomItem.stat, value: randomItem.value, desc: randomItem.desc });
+            showMessage(`🧳 Куплено: ${randomItem.name} за ${randomItem.price} золота`);
+            updateStats();
+            saveGame();
         }
 
         // ============================================================
@@ -1117,7 +2081,12 @@ Dark Relics — браузерная RPG игра
         // ============================================================
         function teleportTo(locationKey) {
             clearMobs();
-            currentLocation = locationKey;
+            gameState.location = locationKey;
+            if (!gameState.visitedLocations) gameState.visitedLocations = [];
+            if (!gameState.visitedLocations.includes(locationKey)) {
+                gameState.visitedLocations.push(locationKey);
+                checkAchievements();
+            }
             spawnMobs(locationKey);
             updateStats();
             const loc = locations[locationKey];
@@ -1126,6 +2095,336 @@ Dark Relics — браузерная RPG игра
             }
             saveGame();
             showMessage(`📍 ${locations[locationKey].label}`);
+            // Проверяем наличие скрытых объектов
+            spawnHiddenObjects(locationKey);
+            spawnNPCs(locationKey);
+        }
+
+        // ============================================================
+        // СКРЫТЫЕ ОБЪЕКТЫ
+        // ============================================================
+        function spawnHiddenObjects(locationKey) {
+            // Удаляем старые скрытые объекты
+            document.querySelectorAll('.hidden-object').forEach(el => el.remove());
+            
+            if (locationKey === 'пустырь') {
+                // Стена
+                const wall = document.createElement('div');
+                wall.className = 'hidden-object';
+                wall.textContent = '🧱';
+                wall.style.left = (locations['пустырь'].x - 30) + 'px';
+                wall.style.top = (locations['пустырь'].y + 50) + 'px';
+                wall.title = 'Стена (нужно взрыв-зелье)';
+                wall.addEventListener('click', () => {
+                    if (gameState.hasExplosive) {
+                        showMessage('💥 Стена разрушена!');
+                        gameState.hasExplosive = false;
+                        wall.remove();
+                        // Проверка квеста
+                        const q = gameState.quests.find(q => q.id === 'shield_of_absolut' && q.active && !q.completed);
+                        if (q && q.currentStep === 0) {
+                            q.steps[0].done = true;
+                            q.currentStep = 1;
+                            showMessage('✅ Стена разрушена! Идите к Алхимику.');
+                            saveGame();
+                            if (questDiary.classList.contains('visible')) renderQuests();
+                        }
+                    } else {
+                        showMessage('Нужно взрыв-зелье у Алхимика!');
+                    }
+                });
+                gameWorld.appendChild(wall);
+
+                // Пепел
+                const ash = document.createElement('div');
+                ash.className = 'hidden-object';
+                ash.textContent = '🪶';
+                ash.style.left = (locations['пустырь'].x + 70) + 'px';
+                ash.style.top = (locations['пустырь'].y - 30) + 'px';
+                ash.title = 'Пепел Феникса';
+                ash.addEventListener('click', () => {
+                    if (!gameState.hasPhoenixRing) {
+                        gameState.hasPhoenixRing = true;
+                        ash.remove();
+                        showMessage('🪶 Найден Пепел Феникса!');
+                        // Проверка квеста
+                        const q = gameState.quests.find(q => q.id === 'ring_of_phoenix' && q.active && !q.completed);
+                        if (q && q.currentStep === 0) {
+                            q.steps[0].done = true;
+                            q.currentStep = 1;
+                            showMessage('✅ Пепел найден! Несите Алхимику.');
+                            saveGame();
+                            if (questDiary.classList.contains('visible')) renderQuests();
+                        }
+                    }
+                });
+                gameWorld.appendChild(ash);
+            }
+
+            if (locationKey === 'пещера') {
+                // Сталактит
+                const stalactite = document.createElement('div');
+                stalactite.className = 'hidden-object';
+                stalactite.textContent = '💧';
+                stalactite.style.left = (locations['пещера'].x + 40) + 'px';
+                stalactite.style.top = (locations['пещера'].y - 20) + 'px';
+                stalactite.title = 'Сталактит (Редкий камень)';
+                stalactite.addEventListener('click', () => {
+                    if (!gameState.hasRareStone) {
+                        gameState.hasRareStone = true;
+                        stalactite.remove();
+                        showMessage('💧 Получен Редкий камень!');
+                        // Проверка квеста
+                        const q = gameState.quests.find(q => q.id === 'shield_of_absolut' && q.active && !q.completed);
+                        if (q && q.currentStep >= 2) {
+                            q.steps[2].done = true;
+                            q.currentStep = 3;
+                            showMessage('✅ Редкий камень получен! Идите к Кузнецу.');
+                            saveGame();
+                            if (questDiary.classList.contains('visible')) renderQuests();
+                        }
+                        // Проверка для меча раскола
+                        if (gameState.shardsFound < 3) {
+                            gameState.shardsFound = (gameState.shardsFound || 0) + 1;
+                            checkLegendaryQuests();
+                        }
+                    }
+                });
+                gameWorld.appendChild(stalactite);
+            }
+
+            // Осколок в лесу
+            if (locationKey === 'лес' && Math.random() < 0.05 && gameState.shardsFound < 3) {
+                const shard = document.createElement('div');
+                shard.className = 'hidden-object';
+                shard.textContent = '⚔️';
+                shard.style.left = (locations['лес'].x + 80 + Math.random() * 40) + 'px';
+                shard.style.top = (locations['лес'].y + 60 + Math.random() * 40) + 'px';
+                shard.title = 'Осколок меча';
+                shard.addEventListener('click', () => {
+                    if (gameState.shardsFound < 3) {
+                        gameState.shardsFound = (gameState.shardsFound || 0) + 1;
+                        shard.remove();
+                        showMessage(`⚔️ Найден осколок меча (${gameState.shardsFound}/3)!`);
+                        checkLegendaryQuests();
+                        saveGame();
+                    }
+                });
+                gameWorld.appendChild(shard);
+            }
+        }
+
+        // ============================================================
+        // NPC
+        // ============================================================
+        function spawnNPCs(locationKey) {
+            document.querySelectorAll('.npc:not([id="trader"])').forEach(el => el.remove());
+
+            // Алхимик в городе
+            if (locationKey === 'начальный_город') {
+                const alchemist = createNPC('🧪', 'Алхимик', 'alchemist', locations['начальный_город'].x - 60, locations['начальный_город'].y + 30);
+                alchemist.addEventListener('click', () => {
+                    showMessage('🧪 Алхимик: "Принесите ингредиенты, и я создам зелье!"');
+                    // Проверка квеста
+                    const q = gameState.quests.find(q => q.id === 'ring_of_phoenix' && q.active && !q.completed);
+                    if (q && q.currentStep === 1) {
+                        q.steps[1].done = true;
+                        q.currentStep = 2;
+                        showMessage('✅ Пепел у Алхимика! Добудьте Кровь Дракона.');
+                        saveGame();
+                        if (questDiary.classList.contains('visible')) renderQuests();
+                    }
+                });
+                
+                const blacksmith = createNPC('⚒️', 'Кузнец', 'blacksmith', locations['начальный_город'].x + 70, locations['начальный_город'].y - 20);
+                blacksmith.addEventListener('click', () => {
+                    showMessage('⚒️ Кузнец: "Принесите части, и я соединю их!"');
+                    // Проверка соединения щита
+                    const qShield = gameState.quests.find(q => q.id === 'shield_of_absolut' && q.active && !q.completed);
+                    if (qShield && qShield.currentStep === 3 && gameState.hasShieldHalf && gameState.hasRareStone) {
+                        qShield.steps[3].done = true;
+                        qShield.completed = true;
+                        qShield.active = false;
+                        addToInventory({ ...qShield.reward });
+                        showMessage(`🛡 Щит Абсолюта создан!`);
+                        saveGame();
+                        if (questDiary.classList.contains('visible')) renderQuests();
+                    }
+                    // Проверка соединения меча
+                    const qSword = gameState.quests.find(q => q.id === 'sword_of_split' && q.active && !q.completed);
+                    if (qSword && qSword.currentStep === 3 && gameState.shardsFound >= 3) {
+                        qSword.steps[3].done = true;
+                        qSword.currentStep = 4;
+                        gameState.hasCrackedSword = true;
+                        addToInventory({ name: 'Треснутый Меч', type: 'weapon', stat: 'damage', value: 80, percent: false, desc: 'Урон 80' });
+                        showMessage('⚔️ Треснутый Меч создан! Убейте 30 мобов.');
+                        saveGame();
+                        if (questDiary.classList.contains('visible')) renderQuests();
+                    }
+                });
+            }
+
+            // Старец в подземельях
+            if (locationKey === 'подземелья') {
+                const elder = createNPC('👨‍🦯', 'Старец', 'elder', locations['подземелья'].x - 40, locations['подземелья'].y + 40);
+                elder.addEventListener('click', () => {
+                    showMessage('👨‍🦯 Старец: "Ты ищешь знания? Принеси Глаз Хранителя."');
+                    // Проверка квеста
+                    const q = gameState.quests.find(q => q.id === 'eye_of_foresight' && q.active && !q.completed);
+                    if (q && q.currentStep === 0) {
+                        q.steps[0].done = true;
+                        q.currentStep = 1;
+                        showMessage('✅ Старец найден! Ищите Глаз Хранителя.');
+                        saveGame();
+                        if (questDiary.classList.contains('visible')) renderQuests();
+                    }
+                    // Для квеста Коса Смерти
+                    const qScythe = gameState.quests.find(q => q.id === 'scythe_of_death' && q.active && !q.completed);
+                    if (qScythe && qScythe.currentStep === 0) {
+                        qScythe.steps[0].done = true;
+                        qScythe.currentStep = 1;
+                        showMessage('✅ Старец указал путь! Ищите Призрака в Лесу ночью.');
+                        saveGame();
+                        if (questDiary.classList.contains('visible')) renderQuests();
+                    }
+                });
+            }
+
+            // Леди Вуаль на пустыре
+            if (locationKey === 'пустырь') {
+                const lady = createNPC('🧙‍♀️', 'Леди Вуаль', 'lady', locations['пустырь'].x + 50, locations['пустырь'].y + 40);
+                lady.addEventListener('click', () => {
+                    showMessage('🧙‍♀️ Леди Вуаль: "Третий осколок у меня... но сначала докажи свою силу."');
+                    // Проверка для меча раскола
+                    if (gameState.shardsFound < 3) {
+                        gameState.shardsFound = (gameState.shardsFound || 0) + 1;
+                        showMessage(`⚔️ Получен осколок от Леди Вуаль (${gameState.shardsFound}/3)!`);
+                        checkLegendaryQuests();
+                        saveGame();
+                    }
+                });
+            }
+
+            // Призрак в лесу (только ночью)
+            if (locationKey === 'лес' && !gameState.isDay) {
+                const ghost = createNPC('👻', 'Призрак', 'ghost', locations['лес'].x - 50, locations['лес'].y - 30);
+                ghost.addEventListener('click', () => {
+                    showMessage('👻 Призрак: "Ты ищешь Косу Смерти? Она у Жнеца в подземельях."');
+                    // Проверка квеста
+                    const q = gameState.quests.find(q => q.id === 'scythe_of_death' && q.active && !q.completed);
+                    if (q && q.currentStep === 1) {
+                        q.steps[1].done = true;
+                        q.currentStep = 2;
+                        showMessage('✅ Призрак найден! Убейте 50 мобов в Лесу.');
+                        saveGame();
+                        if (questDiary.classList.contains('visible')) renderQuests();
+                    }
+                });
+            }
+        }
+
+        function createNPC(emoji, name, className, x, y) {
+            const el = document.createElement('div');
+            el.className = `npc ${className}`;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.textContent = emoji;
+            el.title = name;
+            el.id = `npc_${className}`;
+            gameWorld.appendChild(el);
+            return el;
+        }
+
+        // ============================================================
+        // ДЕНЬ/НОЧЬ
+        // ============================================================
+        function startDayNightCycle() {
+            if (!gameState.isDay) gameWorld.classList.add('night');
+            if (dayTimer) clearTimeout(dayTimer);
+            dayTimer = setTimeout(() => {
+                gameState.isDay = false;
+                gameWorld.classList.add('night');
+                saveGame();
+                showMessage('🌙 Наступила ночь... Призрак появится в Лесу!');
+                // Обновляем NPC
+                if (gameState.location === 'лес') {
+                    spawnNPCs('лес');
+                }
+                dayTimer = setTimeout(() => {
+                    gameState.isDay = true;
+                    gameWorld.classList.remove('night');
+                    saveGame();
+                    showMessage('☀️ Наступил день!');
+                    // Удаляем призрака
+                    document.querySelectorAll('.npc.ghost').forEach(el => el.remove());
+                    startDayNightCycle();
+                }, 160000);
+            }, gameState.isDay ? 160000 : 10000);
+        }
+
+        // ============================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ============================================================
+        function initGame() {
+            locations = randomLocations();
+            const loaded = loadGame();
+            if (!loaded) {
+                gameState.gold = 10000;
+                gameState.damage = 4;
+                gameState.level = 1;
+                gameState.maxLevel = 225;
+                gameState.hp = 100;
+                gameState.maxHp = 100;
+                gameState.exp = 0;
+                gameState.expToLevel = 400;
+                gameState.location = 'начальный_город';
+                gameState.inventory = [];
+                gameState.equipment = { weapon: null, armor: null };
+                gameState.isDay = true;
+                gameState.totalKills = 0;
+                gameState.totalDeaths = 0;
+                gameState.totalGoldEarned = 0;
+                gameState.bossKills = 0;
+                gameState.startDate = new Date().toISOString();
+                gameState.visitedLocations = [];
+                gameState.nightKills = 0;
+                gameState.achievements = [];
+                gameState.titles = [];
+                gameState.quests = JSON.parse(JSON.stringify(legendaryQuests));
+                gameState.hasExplosive = false;
+                gameState.hasShieldHalf = false;
+                gameState.hasRareStone = false;
+                gameState.hasPhoenixRing = false;
+                gameState.phoenixCooldown = 0;
+                gameState.hasCrackedSword = false;
+                gameState.crackedSwordKills = 0;
+                gameState.shardsFound = 0;
+                gameState.hasEyeSight = false;
+                saveGame();
+            }
+            recalcStats();
+            updateStats();
+            renderTeleportPoints();
+            spawnMobs(gameState.location);
+            spawnHiddenObjects(gameState.location);
+            spawnNPCs(gameState.location);
+            if (!gameState.isDay) gameWorld.classList.add('night');
+            startDayNightCycle();
+            startWeatherCycle();
+            startTraderCycle();
+            
+            // Добавляем кнопки для старта легендарных квестов (только если активны)
+            setTimeout(() => {
+                // Если есть доступные квесты, показываем подсказку
+                const availableQuests = gameState.quests.filter(q => !q.active && !q.completed && gameState.level >= q.levelReq);
+                if (availableQuests.length > 0) {
+                    showMessage('📜 Доступны легендарные квесты! Нажмите Q для просмотра.');
+                }
+            }, 3000);
+
+            const loc = locations[gameState.location];
+            if (loc) setTimeout(() => worldScroll.scrollTo({ left: Math.max(0, loc.x - worldScroll.clientWidth / 2), top: Math.max(0, loc.y - worldScroll.clientHeight / 2) }), 300);
+            showMessage(loaded ? '📂 Прогресс загружен!' : '🆕 Новая игра!');
         }
 
         function renderTeleportPoints() {
@@ -1148,57 +2447,18 @@ Dark Relics — браузерная RPG игра
         }
 
         // ============================================================
-        // ДЕНЬ/НОЧЬ
-        // ============================================================
-        function startDayNightCycle() {
-            if (!isDay) gameWorld.classList.add('night');
-            if (dayTimer) clearTimeout(dayTimer);
-            dayTimer = setTimeout(() => {
-                isDay = false; gameWorld.classList.add('night'); saveGame();
-                showMessage('🌙 Наступила ночь...');
-                dayTimer = setTimeout(() => {
-                    isDay = true; gameWorld.classList.remove('night'); saveGame();
-                    showMessage('☀️ Наступил день!');
-                    startDayNightCycle();
-                }, 160000);
-            }, isDay ? 160000 : 10000);
-        }
-
-        // ============================================================
-        // ИНИЦИАЛИЗАЦИЯ
-        // ============================================================
-        function initGame() {
-            locations = randomLocations();
-            const loaded = loadGame();
-            if (!loaded) {
-                gold = defaultState.gold; damage = defaultState.damage;
-                level = defaultState.level; maxLevel = defaultState.maxLevel;
-                hp = defaultState.hp; maxHp = defaultState.maxHp;
-                exp = defaultState.exp; expToLevel = defaultState.expToLevel;
-                currentLocation = defaultState.location;
-                inventory = []; equipment = { weapon: null, armor: null };
-                isDay = defaultState.isDay;
-                saveGame();
-            }
-            recalcStats(); updateStats();
-            renderTeleportPoints();
-            spawnMobs(currentLocation);
-            if (!isDay) gameWorld.classList.add('night');
-            startDayNightCycle();
-            const loc = locations[currentLocation];
-            if (loc) setTimeout(() => worldScroll.scrollTo({ left: Math.max(0, loc.x - worldScroll.clientWidth / 2), top: Math.max(0, loc.y - worldScroll.clientHeight / 2) }), 300);
-            showMessage(loaded ? '📂 Прогресс загружен!' : '🆕 Новая игра!');
-        }
-
-        // ============================================================
         // СОБЫТИЯ
         // ============================================================
         document.getElementById('btn-inventory').addEventListener('click', toggleInventory);
         document.getElementById('btn-shop').addEventListener('click', toggleShop);
         document.getElementById('btn-save').addEventListener('click', () => { saveGame(); showMessage('💾 Сохранено!'); });
         document.getElementById('btn-promo').addEventListener('click', togglePromo);
+        document.getElementById('btn-quests').addEventListener('click', toggleQuests);
+        document.getElementById('btn-bio').addEventListener('click', toggleBio);
         document.getElementById('shop-close').addEventListener('click', () => shopOverlay.classList.remove('visible'));
         document.getElementById('promo-close').addEventListener('click', () => promoOverlay.classList.remove('visible'));
+        document.getElementById('quest-close').addEventListener('click', () => questDiary.classList.remove('visible'));
+        document.getElementById('bio-close').addEventListener('click', () => bioOverlay.classList.remove('visible'));
         document.getElementById('btn-attack').addEventListener('click', attackMob);
         document.getElementById('btn-cancel-target').addEventListener('click', deselectMob);
         document.getElementById('promo-submit').addEventListener('click', activatePromo);
@@ -1225,6 +2485,9 @@ Dark Relics — браузерная RPG игра
         window.addEventListener('beforeunload', () => saveGame());
         window.addEventListener('pagehide', () => saveGame());
         document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
+
+        // Добавляем старт квестов в консоль для удобства тестирования
+        window.startQuest = startQuest;
 
         initGame();
     </script>
