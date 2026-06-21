@@ -3,319 +3,987 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- ============================================================ -->
-    <!-- Dark Relics — Браузерная RPG -->
-    <!-- © 2026 Вагид. Все права защищены. -->
-    <!-- Код является интеллектуальной собственностью автора. -->
-    <!-- Запрещено копирование, распространение и использование без разрешения. -->
-    <!-- ============================================================ -->
-    
-    <title>Dark Relics — Браузерная RPG игра | Тёмное фэнтези</title>
-    <meta name="description" content="Dark Relics — бесплатная браузерная RPG в тёмном фэнтези. Открытый мир, 6 локаций, 225 уровней, мобы, боссы, легендарные предметы, квесты. Играй прямо в браузере без скачивания!">
-    <meta name="keywords" content="Dark Relics, браузерная RPG, тёмное фэнтези, бесплатная RPG, браузерная игра, онлайн игра, 2D RPG, фэнтези игра, инди игра, RPG в браузере">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="ВашеИмя">
-    <link rel="canonical" href="https://bad-rpg.onrender.com/">
-    
-    <!-- Open Graph для соцсетей -->
-    <meta property="og:title" content="Dark Relics — Браузерная RPG">
-    <meta property="og:description" content="Бесплатная RPG в тёмном фэнтези. Играй прямо в браузере!">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://bad-rpg.onrender.com/">
+    <title>Dark Relics 2D — RPG</title>
     <style>
-        :root { --gold: #c9a432; --text: #d4c5a0; --border: #5a4a2a; --parchment: #e8d5a0; --red: #8b2020; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; overflow: hidden; position: fixed; top: 0; left: 0; touch-action: manipulation; -webkit-overflow-scrolling: none; background: #0d0d08; }
-        body { font-family: 'Times New Roman', 'Georgia', serif; color: var(--text); display: flex; flex-direction: column; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
-        .top-bar { background: linear-gradient(180deg, #1a1008 0%, #0d0804 100%); padding: 4px 8px; display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #4a3a1a; font-size: 9px; z-index: 200; flex-shrink: 0; flex-wrap: wrap; min-height: 30px; }
-        .top-bar .stat { display: flex; align-items: center; gap: 2px; font-weight: bold; font-size: 8px; }
-        .top-bar .stat .icon { font-size: 11px; }
-        .top-bar .stat .value { color: var(--gold); font-size: 10px; }
-        .hp-bar-mini { width: 55px; height: 5px; background: #2a0a0a; border: 1px solid #6a3a3a; border-radius: 2px; overflow: hidden; }
-        .hp-bar-mini .fill { height: 100%; background: linear-gradient(180deg, #d04040, #8b2020); transition: width 0.4s; }
-        .exp-bar-mini { width: 45px; height: 4px; background: #1a2a0a; border: 1px solid #4a6a2a; border-radius: 2px; overflow: hidden; }
-        .exp-bar-mini .fill { height: 100%; background: linear-gradient(180deg, #80d040, #4a8b20); transition: width 0.4s; }
-        .location-indicator { margin-left: auto; font-size: 8px; color: #c0a060; white-space: nowrap; }
-        .title-display { font-size: 8px; color: #ff6600; margin-left: 6px; white-space: nowrap; }
-        .world-scroll { flex: 1; overflow: auto; -webkit-overflow-scrolling: touch; position: relative; background: #1a1a0a; }
-        .game-world { width: 900px; height: 650px; position: relative; background: #3a4a2a; cursor: grab; min-width: 900px; min-height: 650px; }
+        :root {
+            --gold: #c9a432;
+            --text: #d4c5a0;
+            --border: #5a4a2a;
+            --parchment: #e8d5a0;
+            --red: #8b2020;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            touch-action: manipulation;
+            -webkit-overflow-scrolling: none;
+            background: #0d0d08;
+        }
+
+        body {
+            font-family: 'Times New Roman', 'Georgia', serif;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .top-bar {
+            background: linear-gradient(180deg, #1a1008 0%, #0d0804 100%);
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #4a3a1a;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            z-index: 200;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            min-height: 32px;
+        }
+        .top-bar .stat {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-weight: bold;
+            font-size: 9px;
+        }
+        .top-bar .stat .icon { font-size: 12px; }
+        .top-bar .stat .value { color: var(--gold); font-size: 11px; }
+        .hp-bar-mini {
+            width: 65px; height: 6px;
+            background: #2a0a0a;
+            border: 1px solid #6a3a3a;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .hp-bar-mini .fill {
+            height: 100%;
+            background: linear-gradient(180deg, #d04040, #8b2020);
+            transition: width 0.4s;
+        }
+        .exp-bar-mini {
+            width: 55px; height: 5px;
+            background: #1a2a0a;
+            border: 1px solid #4a6a2a;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .exp-bar-mini .fill {
+            height: 100%;
+            background: linear-gradient(180deg, #80d040, #4a8b20);
+            transition: width 0.4s;
+        }
+        .location-indicator {
+            margin-left: auto;
+            font-size: 9px;
+            color: #c0a060;
+            white-space: nowrap;
+        }
+        .save-dot {
+            width: 8px; height: 8px;
+            background: #5a8a3a;
+            border-radius: 50%;
+            animation: saveBlink 0.6s;
+        }
+        @keyframes saveBlink {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .world-scroll {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            background: #1a1a0a;
+        }
+        .game-world {
+            width: 900px;
+            height: 650px;
+            position: relative;
+            background: #3a4a2a;
+            cursor: grab;
+            min-width: 900px;
+            min-height: 650px;
+        }
         .game-world:active { cursor: grabbing; }
-        .game-world.night { background: #1a2a1a; filter: brightness(0.5); }
-        .game-world.rain { filter: brightness(0.7) hue-rotate(-10deg); }
-        .game-world.infected { filter: sepia(0.4) brightness(0.8); }
-        .location-label { position: absolute; font-size: 10px; color: #e0d8b0; text-shadow: 1px 1px 2px #000; pointer-events: none; z-index: 5; font-weight: bold; white-space: nowrap; }
-        .teleport-point { position: absolute; width: 28px; height: 28px; background: radial-gradient(circle, #8090ff 0%, #3040a0 70%, transparent 70%); border-radius: 50%; cursor: pointer; z-index: 10; animation: teleportGlow 2s infinite; display: flex; align-items: center; justify-content: center; font-size: 7px; color: white; text-shadow: 0 0 3px #000; font-weight: bold; }
-        @keyframes teleportGlow { 0%,100% { box-shadow: 0 0 6px #6080ff; } 50% { box-shadow: 0 0 14px #80a0ff; } }
-        .mob { position: absolute; width: 24px; height: 24px; background: radial-gradient(circle, #e0c040 0%, #b09020 60%, #705000 100%); border-radius: 50%; cursor: pointer; z-index: 15; transition: left 1.5s linear, top 1.5s linear; box-shadow: 0 0 8px rgba(200,160,40,0.5); display: flex; align-items: center; justify-content: center; font-size: 6px; color: #3a2a00; font-weight: bold; }
-        .mob.infected { box-shadow: 0 0 14px red; animation: infectedPulse 0.8s infinite; }
-        @keyframes infectedPulse { 0%,100% { box-shadow: 0 0 10px red; } 50% { box-shadow: 0 0 20px red; } }
-        .mob.selected { outline: 3px dashed #ffcc00; outline-offset: 4px; animation: outlineDash 0.8s linear infinite; z-index: 20; }
-        @keyframes outlineDash { 0% { outline-offset: 3px; } 50% { outline-offset: 8px; } 100% { outline-offset: 3px; } }
+        .game-world.night {
+            background: #1a2a1a;
+            filter: brightness(0.5) saturate(0.6);
+        }
+        .game-world::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><circle cx="30" cy="30" r="1.5" fill="%235a6a3a" opacity="0.4"/><circle cx="15" cy="45" r="1" fill="%234a5a2a" opacity="0.3"/><circle cx="48" cy="18" r="1.2" fill="%236a7a4a" opacity="0.35"/></svg>');
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .location-label {
+            position: absolute;
+            font-size: 11px;
+            color: #e0d8b0;
+            text-shadow: 1px 1px 2px #000;
+            pointer-events: none;
+            z-index: 5;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .teleport-point {
+            position: absolute;
+            width: 32px; height: 32px;
+            background: radial-gradient(circle, #8090ff 0%, #3040a0 70%, transparent 70%);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            animation: teleportGlow 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: white;
+            text-shadow: 0 0 3px #000;
+            font-weight: bold;
+        }
+        @keyframes teleportGlow {
+            0%,100% { box-shadow: 0 0 8px #6080ff; }
+            50% { box-shadow: 0 0 18px #80a0ff; }
+        }
+
+        .mob {
+            position: absolute;
+            width: 26px; height: 26px;
+            background: radial-gradient(circle, #e0c040 0%, #b09020 60%, #705000 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 15;
+            transition: left 1.5s linear, top 1.5s linear;
+            box-shadow: 0 0 10px rgba(200,160,40,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+            color: #3a2a00;
+            font-weight: bold;
+        }
+        .mob.selected {
+            outline: 3px dashed #ffcc00;
+            outline-offset: 4px;
+            animation: outlineDash 0.8s linear infinite;
+            z-index: 20;
+        }
+        @keyframes outlineDash {
+            0% { outline-offset: 3px; }
+            50% { outline-offset: 8px; }
+            100% { outline-offset: 3px; }
+        }
         .mob.cave-mob { background: radial-gradient(circle, #909090 0%, #505050 60%, #202020 100%); }
         .mob.dungeon-mob { background: radial-gradient(circle, #c04040 0%, #801010 60%, #400000 100%); }
         .mob.field-mob { background: radial-gradient(circle, #c0a040 0%, #806010 60%, #402000 100%); }
         .mob-ellad { background: radial-gradient(circle, #e0e0ff 0%, #8080c0 60%, #303060 100%); }
-        .hidden-object { position: absolute; width: 30px; height: 30px; cursor: pointer; z-index: 25; font-size: 22px; text-align: center; line-height: 30px; animation: hintGlow 2s infinite; pointer-events: auto; }
-        @keyframes hintGlow { 0%,100% { opacity: 0.5; filter: drop-shadow(0 0 3px gold); } 50% { opacity: 1; filter: drop-shadow(0 0 8px gold); } }
-        .npc { position: absolute; width: 34px; height: 34px; cursor: pointer; z-index: 25; font-size: 26px; text-align: center; line-height: 34px; animation: npcFloat 2s infinite ease-in-out; pointer-events: auto; }
-        @keyframes npcFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .wandering-merchant { animation: merchantGlow 1.5s infinite; font-size: 30px; z-index: 26; }
-        @keyframes merchantGlow { 0%,100% { filter: drop-shadow(0 0 5px gold); } 50% { filter: drop-shadow(0 0 15px gold); } }
-        .target-panel { position: fixed; right: 6px; top: 44px; background: rgba(10,5,0,0.94); border: 2px solid #5a4a2a; padding: 8px; font-size: 9px; z-index: 250; min-width: 130px; display: none; color: #d4c5a0; }
+
+        .target-panel {
+            position: fixed;
+            right: 8px; top: 50px;
+            background: rgba(10,5,0,0.94);
+            border: 2px solid #5a4a2a;
+            padding: 10px;
+            font-size: 10px;
+            z-index: 250;
+            min-width: 140px;
+            display: none;
+            color: #d4c5a0;
+        }
         .target-panel.visible { display: block; }
-        .target-panel button { display: block; width: 100%; margin-top: 4px; padding: 4px; border: 1px solid #5a4a2a; background: #2a1a08; color: #d4c5a0; cursor: pointer; font-family: inherit; font-size: 9px; }
-        .target-panel .attack-btn { background: #4a1010; color: #ffaaaa; border-color: #8b2020; }
-        .inventory-overlay { position: fixed; left: 4px; top: 34px; width: 230px; max-height: 65%; background: rgba(15,10,2,0.96); border: 3px solid #5a4a2a; z-index: 300; display: none; flex-direction: column; padding: 6px; font-size: 9px; overflow-y: auto; color: #c0b090; }
+        .target-panel .mob-name { font-size: 12px; color: #e0c040; font-weight: bold; }
+        .target-panel button {
+            display: block; width: 100%;
+            margin-top: 4px; padding: 5px;
+            border: 1px solid #5a4a2a;
+            background: #2a1a08;
+            color: #d4c5a0;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 10px;
+        }
+        .target-panel .attack-btn {
+            background: #4a1010;
+            color: #ffaaaa;
+            border-color: #8b2020;
+        }
+
+        .inventory-overlay {
+            position: fixed;
+            left: 5px; top: 38px;
+            width: 250px;
+            max-height: 70%;
+            background: rgba(15,10,2,0.96);
+            border: 3px solid #5a4a2a;
+            z-index: 300;
+            display: none;
+            flex-direction: column;
+            padding: 8px;
+            font-size: 10px;
+            overflow-y: auto;
+            color: #c0b090;
+        }
         .inventory-overlay.visible { display: flex; }
-        .inv-item { padding: 3px 5px; border-bottom: 1px solid #2a1a08; cursor: pointer; display: flex; justify-content: space-between; font-size: 9px; }
-        .inv-item.equipped { color: #80ff80; border-left: 3px solid #4a8b20; }
-        .inv-item.legendary { color: #ff6600; border-left: 3px solid #ff6600; }
-        .inv-item.unidentified { color: #c0a0ff; font-style: italic; }
-        .shop-overlay { position: fixed; inset: 30px 8px 8px 8px; background: rgba(20,12,4,0.97); border: 4px solid #6a5a3a; z-index: 310; display: none; flex-direction: column; padding: 12px; overflow-y: auto; font-size: 10px; }
+        .inventory-overlay h3 {
+            text-align: center;
+            color: var(--gold);
+            border-bottom: 1px solid #4a3a1a;
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .inv-item {
+            padding: 4px 6px;
+            border-bottom: 1px solid #2a1a08;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+        }
+        .inv-item.equipped {
+            color: #80ff80;
+            border-left: 3px solid #4a8b20;
+        }
+        .char-preview {
+            text-align: center;
+            padding: 8px;
+            border-bottom: 2px solid #4a3a1a;
+            margin-bottom: 8px;
+        }
+        .char-preview img { width: 60px; height: auto; }
+
+        .shop-overlay {
+            position: fixed;
+            inset: 35px 10px 10px 10px;
+            background: rgba(20,12,4,0.97);
+            border: 4px solid #6a5a3a;
+            z-index: 310;
+            display: none;
+            flex-direction: column;
+            padding: 15px;
+            overflow-y: auto;
+            font-size: 11px;
+        }
         .shop-overlay.visible { display: flex; }
-        .shop-bg { background: var(--parchment); color: #2a1a08; padding: 10px; flex: 1; overflow-y: auto; }
-        .shop-tabs { display: flex; gap: 3px; margin-bottom: 8px; }
-        .shop-tabs button { padding: 5px 10px; background: #3a2a0a; border: 1px solid #6a5a2a; color: #c0a060; cursor: pointer; font-family: inherit; font-size: 10px; }
-        .shop-tabs button.active { background: #6a4a10; color: #fff; border-color: #c9a432; }
-        .shop-close { position: absolute; right: 8px; top: 8px; width: 22px; height: 22px; background: #6a2020; color: #ffaaaa; border: 1px solid #8b2020; cursor: pointer; font-size: 12px; z-index: 5; text-align: center; line-height: 20px; }
-        .shop-cards { display: flex; flex-wrap: wrap; gap: 6px; }
-        .shop-card { width: 110px; background: #f5ead0; border: 2px solid #8a7a4a; padding: 6px; text-align: center; font-size: 9px; color: #1a1008; }
-        .shop-card .card-name { font-weight: bold; font-size: 10px; }
-        .shop-card .buy-btn { background: #8b2020; color: #ffdddd; border: 1px solid #5a1010; padding: 3px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 9px; width: 100%; margin-top: 3px; }
-        .shop-card .identify-btn { background: #4a3a6a; color: #ddddff; border: 1px solid #3a2a5a; padding: 3px; cursor: pointer; font-family: inherit; font-weight: bold; font-size: 9px; width: 100%; margin-top: 3px; }
-        .quest-log { position: fixed; right: 4px; bottom: 16px; width: 180px; max-height: 130px; background: rgba(10,5,0,0.9); border: 2px solid #4a3a1a; z-index: 280; padding: 5px; font-size: 8px; color: #c0a060; overflow-y: auto; display: none; }
-        .quest-log.visible { display: block; }
-        .bio-log { position: fixed; left: 4px; bottom: 16px; width: 180px; max-height: 130px; background: rgba(10,5,0,0.9); border: 2px solid #4a3a1a; z-index: 280; padding: 5px; font-size: 8px; color: #c0a060; overflow-y: auto; display: none; }
-        .bio-log.visible { display: block; }
-        .promo-overlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(10,5,0,0.97); border: 3px solid #c9a432; padding: 16px; z-index: 350; display: none; flex-direction: column; gap: 8px; text-align: center; min-width: 220px; }
+        .shop-overlay .shop-bg {
+            background: var(--parchment);
+            color: #2a1a08;
+            padding: 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .shop-tabs { display: flex; gap: 3px; margin-bottom: 10px; }
+        .shop-tabs button {
+            padding: 6px 12px;
+            background: #3a2a0a;
+            border: 1px solid #6a5a2a;
+            color: #c0a060;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 11px;
+        }
+        .shop-tabs button.active {
+            background: #6a4a10;
+            color: #fff;
+            border-color: #c9a432;
+        }
+        .shop-close {
+            position: absolute;
+            right: 10px; top: 10px;
+            width: 26px; height: 26px;
+            background: #6a2020;
+            color: #ffaaaa;
+            border: 1px solid #8b2020;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 5;
+            text-align: center;
+            line-height: 24px;
+        }
+        .shop-cards { display: flex; flex-wrap: wrap; gap: 8px; }
+        .shop-card {
+            width: 120px;
+            background: #f5ead0;
+            border: 2px solid #8a7a4a;
+            padding: 8px;
+            text-align: center;
+            font-size: 10px;
+            color: #1a1008;
+        }
+        .shop-card .card-name { font-weight: bold; font-size: 11px; color: #3a2010; }
+        .shop-card .card-desc { font-size: 9px; color: #5a4a3a; }
+        .shop-card .card-price { color: #8b5010; font-weight: bold; }
+        .shop-card .buy-btn {
+            background: #8b2020;
+            color: #ffdddd;
+            border: 1px solid #5a1010;
+            padding: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 10px;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .promo-overlay {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(10,5,0,0.97);
+            border: 3px solid #c9a432;
+            padding: 20px;
+            z-index: 350;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+            min-width: 250px;
+        }
         .promo-overlay.visible { display: flex; }
-        .ui-btn { position: fixed; right: 4px; width: 30px; height: 30px; background: #3a3a2a; border: 2px solid #6a5a2a; color: #c0b080; font-weight: bold; font-size: 13px; cursor: pointer; z-index: 290; font-family: inherit; display: flex; align-items: center; justify-content: center; }
-        #btn-inventory { top: 38px; } #btn-shop { top: 72px; } #btn-save { top: 106px; font-size: 10px; } #btn-promo { top: 140px; } #btn-quests { top: 174px; } #btn-bio { top: 208px; }
-        .floating-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.92); color: #e0c040; padding: 8px 16px; border: 2px solid #6a5a2a; z-index: 400; font-size: 12px; pointer-events: none; animation: fadeUp 2s forwards; }
-        @keyframes fadeUp { 0% { opacity: 1; transform: translate(-50%, -50%); } 80% { opacity: 0.8; transform: translate(-50%, -70%); } 100% { opacity: 0; transform: translate(-50%, -100%); } }
+        .promo-overlay h3 { color: var(--gold); font-size: 14px; }
+        .promo-overlay input {
+            padding: 8px;
+            background: #1a1a0a;
+            border: 1px solid #5a4a2a;
+            color: var(--gold);
+            font-family: inherit;
+            font-size: 14px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .promo-overlay button {
+            padding: 8px;
+            background: #4a3a1a;
+            border: 1px solid #c9a432;
+            color: var(--gold);
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+        }
+        .promo-close {
+            position: absolute;
+            right: 8px; top: 8px;
+            background: none;
+            border: none;
+            color: #8a7a5a;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .ui-btn {
+            position: fixed;
+            right: 6px;
+            width: 34px; height: 34px;
+            background: #3a3a2a;
+            border: 2px solid #6a5a2a;
+            color: #c0b080;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            z-index: 290;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #btn-inventory { top: 42px; }
+        #btn-shop { top: 80px; }
+        #btn-save { top: 118px; font-size: 12px; background: #2a3a1a; border-color: #4a6a2a; }
+        #btn-promo { top: 156px; font-size: 12px; background: #3a2a0a; border-color: #c9a432; color: #c9a432; }
+
+        .floating-msg {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.92);
+            color: #e0c040;
+            padding: 10px 20px;
+            border: 2px solid #6a5a2a;
+            z-index: 400;
+            font-family: inherit;
+            font-size: 13px;
+            pointer-events: none;
+            animation: fadeUp 2s forwards;
+        }
+        @keyframes fadeUp {
+            0% { opacity: 1; transform: translate(-50%, -50%); }
+            80% { opacity: 0.8; transform: translate(-50%, -70%); }
+            100% { opacity: 0; transform: translate(-50%, -100%); }
+        }
+        .damage-num {
+            position: absolute;
+            color: #ff4444;
+            font-weight: bold;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 40;
+            animation: dmgFloat 1.2s forwards;
+        }
+        @keyframes dmgFloat {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-35px); }
+        }
+
+        .swipe-hint {
+            position: fixed;
+            bottom: 6px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: #8a7a5a;
+            font-size: 9px;
+            padding: 3px 10px;
+            border-radius: 8px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        @media (max-width: 500px) {
+            .top-bar { font-size: 8px; gap: 3px; padding: 2px 4px; min-height: 26px; }
+            .hp-bar-mini { width: 45px; height: 5px; }
+            .exp-bar-mini { width: 40px; height: 4px; }
+            .inventory-overlay { width: 200px; left: 2px; top: 30px; max-height: 60%; font-size: 9px; }
+            .shop-card { width: 90px; font-size: 8px; }
+            .ui-btn { width: 28px; height: 28px; font-size: 12px; right: 3px; }
+            #btn-inventory { top: 34px; }
+            #btn-shop { top: 66px; }
+            #btn-save { top: 98px; }
+            #btn-promo { top: 130px; }
+            .target-panel { right: 2px; top: 40px; min-width: 120px; font-size: 9px; }
+        }
     </style>
 </head>
 <body>
+<!--
+Dark Relics — браузерная RPG игра
+© 2026. Вагид. Все права защищены.
+Код является интеллектуальной собственностью автора.
+Запрещено копирование, распространение и использование без разрешения.
+-->
     <div class="top-bar" id="top-bar">
         <div class="stat"><span class="icon">👤</span> Ур: <span class="value" id="stat-level">1</span></div>
         <div class="stat">❤️<div class="hp-bar-mini"><div class="fill" id="hp-fill" style="width:100%"></div></div><span class="value" id="stat-hp">100/100</span></div>
         <div class="stat">⭐<div class="exp-bar-mini"><div class="fill" id="exp-fill" style="width:0%"></div></div><span class="value" id="stat-exp">0/400</span></div>
         <div class="stat"><span class="icon">💰</span> <span class="value" id="stat-gold">10000</span></div>
         <div class="stat"><span class="icon">⚔️</span> <span class="value" id="stat-dmg">4</span></div>
-        <span class="title-display" id="title-display"></span>
         <span class="location-indicator" id="location-indicator">🏰 Начальный Город</span>
+        <span id="save-dot-container"></span>
     </div>
-    <div class="world-scroll" id="world-scroll"><div class="game-world" id="game-world"></div></div>
-    <button class="ui-btn" id="btn-inventory">I</button>
-    <button class="ui-btn" id="btn-shop">S</button>
-    <button class="ui-btn" id="btn-save">💾</button>
-    <button class="ui-btn" id="btn-promo">C</button>
-    <button class="ui-btn" id="btn-quests">Q</button>
-    <button class="ui-btn" id="btn-bio">B</button>
+
+    <div class="world-scroll" id="world-scroll">
+        <div class="game-world" id="game-world"></div>
+    </div>
+
+    <div class="swipe-hint">↔ Свайпайте для перемещения по карте</div>
+
+    <button class="ui-btn" id="btn-inventory" title="Инвентарь">I</button>
+    <button class="ui-btn" id="btn-shop" title="Магазин">S</button>
+    <button class="ui-btn" id="btn-save" title="Сохранить">💾</button>
+    <button class="ui-btn" id="btn-promo" title="Промокод">C</button>
+
     <div class="inventory-overlay" id="inventory-overlay">
+        <div class="char-preview">
+            <img src="https://i.ibb.co/QFh4d18z/84-20260619235002.png" alt="Персонаж">
+            <div style="color:#c0a060;margin-top:3px;font-size:11px;">Октавиус</div>
+        </div>
         <h3>🎒 ИНВЕНТАРЬ</h3>
+        <div style="border-bottom:1px solid #3a2a0a;padding-bottom:4px;margin-bottom:4px;">
+            <div style="color:#8a7a4a;font-size:9px;">ЭКИПИРОВКА:</div>
+            <div id="equip-weapon" style="font-size:10px;">Оружие: нет</div>
+            <div id="equip-armor" style="font-size:10px;">Броня: нет</div>
+        </div>
         <div id="inv-items"></div>
     </div>
+
     <div class="shop-overlay" id="shop-overlay">
         <button class="shop-close" id="shop-close">✕</button>
-        <div class="shop-bg"><div class="shop-tabs"><button class="active" data-tab="weapons">⚔️ Оружие</button><button data-tab="armor">🛡 Броня</button></div><div class="shop-cards" id="shop-cards"></div></div>
+        <div class="shop-bg">
+            <div class="shop-tabs">
+                <button class="active" data-tab="weapons">⚔️ Оружие</button>
+                <button data-tab="armor">🛡 Броня</button>
+            </div>
+            <div class="shop-cards" id="shop-cards"></div>
+        </div>
     </div>
+
     <div class="target-panel" id="target-panel">
         <div class="mob-name" id="target-name">—</div>
         <div>❤️ ХП: <span id="target-hp">0</span></div>
+        <div>⚔️ Урон: <span id="target-dmg">0</span></div>
+        <div>💰 Награда: <span id="target-reward">0 зол</span></div>
         <button class="attack-btn" id="btn-attack">⚔️ АТАКОВАТЬ</button>
         <button id="btn-cancel-target">✕ Отмена</button>
     </div>
+
     <div class="promo-overlay" id="promo-overlay">
-        <h3>🎟 ПРОМОКОД</h3>
-        <input type="text" id="promo-input" placeholder="КОД">
+        <button class="promo-close" id="promo-close">✕</button>
+        <h3>🎟 ВВЕДИТЕ ПРОМОКОД</h3>
+        <input type="text" id="promo-input" placeholder="КОД" maxlength="20" autocomplete="off">
         <button id="promo-submit">АКТИВИРОВАТЬ</button>
-        <div id="promo-result"></div>
+        <div id="promo-result" style="font-size:11px;color:#c0a060;"></div>
     </div>
-    <div class="quest-log" id="quest-log"><div id="quest-list">Нет квестов</div></div>
-    <div class="bio-log" id="bio-log"><div id="bio-list"></div></div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-        const supabase = createClient('https://tmjqafqecjpizawdruzq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRtanFhZnFlY2pwaXphd2RydXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk4OTk2OTYsImV4cCI6MjA5NTQ3NTY5Nn0.8K7i5QEbjYWSvqw78P8RSR_abYM8uCRZbvC9Hp12bac');
+    <script>
+        // ============================================================
+        // ЛОКАЦИИ
+        // Добавляйте новые локации. Координаты X и Y НЕ указываются —
+        // они генерируются случайно при каждой загрузке.
+        // label — название на карте.
+        // mobType — ключ моба из MOBS (необязательно).
+        // mobCount — количество мобов (необязательно).
+        // ============================================================
+        const locationDefs = [
+            { key: 'начальный_город', label: '🏰 Начальный Город' },
+            { key: 'лес', label: '🌲 Лес', mobType: 'forest', mobCount: 6 },
+            { key: 'пещера', label: '🕳 Пещера', mobType: 'cave', mobCount: 4 },
+            { key: 'подземелья', label: '🏚 Подземелья', mobType: 'dungeon', mobCount: 5 },
+            { key: 'пустырь', label: '🏜 Пустырь', mobType: 'field', mobCount: 5 },
+            { key: 'Эллады', label: '✨ Эллады', mobType: 'ellad', mobCount: 3 },
+            // Пример новой локации (раскомментируйте):
+            // { key: 'болото', label: '🪷 Болото', mobType: 'forest', mobCount: 7 },
+        ];
 
-        // ID игрока (сохраняется в localStorage)
-        const PLAYER_ID = localStorage.getItem('dr_player_id') || crypto.randomUUID();
-        localStorage.setItem('dr_player_id', PLAYER_ID);
+        // Случайные координаты для локаций генерируются здесь
+        let locations = {};
 
-        // Глобальное состояние
-        let player = null;
+        function randomLocations() {
+            const newLocs = {};
+            const usedPositions = [];
+            const MAP_W = 840; // ширина карты минус отступы
+            const MAP_H = 590; // высота карты минус отступы
+            const MIN_DIST = 130; // минимальное расстояние между локациями
+
+            locationDefs.forEach((def, index) => {
+                let x, y, tries = 0;
+                do {
+                    x = 40 + Math.random() * MAP_W;
+                    y = 50 + Math.random() * MAP_H;
+                    tries++;
+                } while (tries < 50 && usedPositions.some(p => Math.hypot(p.x - x, p.y - y) < MIN_DIST));
+
+                usedPositions.push({ x, y });
+                newLocs[def.key] = {
+                    x: Math.round(x),
+                    y: Math.round(y),
+                    label: def.label,
+                    mobType: def.mobType || null,
+                    mobCount: def.mobCount || 0
+                };
+            });
+            return newLocs;
+        }
+
+        // ============================================================
+        // МОБЫ
+        // Добавляйте новых мобов.
+        // name — имя.
+        // hp — здоровье.
+        // damage — урон за удар.
+        // attackSpeed — интервал атак (мс).
+        // expMin, expMax — опыт за убийство.
+        // gold — золото.
+        // cssClass — '' (жёлтый), 'cave-mob' (серый), 'dungeon-mob' (красный), 'field-mob' (бронзовый), 'mob-ellad' (сиреневый).
+        // drops — предметы:
+        //   name, type ('weapon'/'armor'), stat ('damage'/'hp'), value, percent (true/false), dropChance (0-100), desc.
+        // ============================================================
+        const mobData = {
+            forest: {
+                name: 'Лесной зверь', hp: 16, damage: 12, attackSpeed: 4000,
+                expMin: 10, expMax: 40, gold: 1200, cssClass: '',
+                drops: [
+                    { name: 'Броня леса', type: 'armor', stat: 'hp', value: 5, percent: true, dropChance: 45, desc: '+5% ХП и урона' },
+                    { name: 'Меч лесника', type: 'weapon', stat: 'damage', value: 35, percent: false, dropChance: 35, desc: 'Урон 35' },
+                ]
+            },
+            cave: {
+                name: 'Пещерный Голем', hp: 150, damage: 45, attackSpeed: 3000,
+                expMin: 50, expMax: 80, gold: 1900, cssClass: 'cave-mob',
+                drops: [
+                    { name: 'Меч пещерного Голема', type: 'weapon', stat: 'damage', value: 85, percent: false, dropChance: 25, desc: 'Урон 85' },
+                    { name: 'Нагрудник пещерного Голема', type: 'armor', stat: 'hp', value: 55, percent: false, dropChance: 24, desc: 'ХП +55' },
+                ]
+            },
+            dungeon: {
+                name: 'Тёмный Рыцарь', hp: 280, damage: 65, attackSpeed: 3500,
+                expMin: 90, expMax: 140, gold: 3200, cssClass: 'dungeon-mob',
+                drops: [
+                    { name: 'Меч Тёмного Рыцаря', type: 'weapon', stat: 'damage', value: 120, percent: false, dropChance: 20, desc: 'Урон 120' },
+                    { name: 'Щит Тьмы', type: 'armor', stat: 'hp', value: 90, percent: false, dropChance: 22, desc: 'ХП +90' },
+                ]
+            },
+            field: {
+                name: 'Пустынный Страж', hp: 420, damage: 95, attackSpeed: 3200,
+                expMin: 160, expMax: 240, gold: 5500, cssClass: 'field-mob',
+                drops: [
+                    { name: 'Клинок Стража', type: 'weapon', stat: 'damage', value: 175, percent: false, dropChance: 18, desc: 'Урон 175' },
+                    { name: 'Доспех Пустыни', type: 'armor', stat: 'hp', value: 140, percent: false, dropChance: 20, desc: 'ХП +140' },
+                ]
+            },
+            ellad: {
+                name: 'Элладский Хранитель', hp: 700, damage: 150, attackSpeed: 2800,
+                expMin: 300, expMax: 500, gold: 12000, cssClass: 'mob-ellad',
+                drops: [
+                    { name: 'Меч Элладов', type: 'weapon', stat: 'damage', value: 280, percent: false, dropChance: 15, desc: 'Урон 280' },
+                    { name: 'Мантия Хранителя', type: 'armor', stat: 'hp', value: 250, percent: false, dropChance: 16, desc: 'ХП +250' },
+                ]
+            },
+            // Пример нового моба:
+            // newMob: {
+            //     name: 'Новый моб', hp: 500, damage: 80, attackSpeed: 3500,
+            //     expMin: 100, expMax: 200, gold: 5000, cssClass: '',
+            //     drops: [
+            //         { name: 'Новый меч', type: 'weapon', stat: 'damage', value: 150, percent: false, dropChance: 30, desc: 'Урон 150' },
+            //     ]
+            // },
+        };
+
+        // ============================================================
+        // МАГАЗИН
+        // name — название. price — цена. desc — описание.
+        // type — 'weapon' или 'armor'. stat — 'damage' или 'hp'. value — число.
+        // ============================================================
+        const shopItems = {
+            weapons: [
+                { name: 'Виадукский меч', price: 42000, desc: 'Меч племени Виадуков.', type: 'weapon', stat: 'damage', value: 200 },
+                { name: 'Рунический меч', price: 72000, desc: 'Меч из тысяч рун.', type: 'weapon', stat: 'damage', value: 320 },
+                { name: 'Клинок Теней', price: 115000, desc: 'Выкован из осколков тьмы.', type: 'weapon', stat: 'damage', value: 480 },
+                { name: 'Молот Горного Короля', price: 180000, desc: 'Разбивает скалы и врагов.', type: 'weapon', stat: 'damage', value: 650 },
+                { name: 'Посох Архимага', price: 250000, desc: 'Посох величайшего мага.', type: 'weapon', stat: 'damage', value: 850 },
+            ],
+            armor: [
+                { name: 'Кольчуга Странника', price: 28000, desc: 'Лёгкая кольчуга.', type: 'armor', stat: 'hp', value: 80 },
+                { name: 'Латный Доспех', price: 65000, desc: 'Доспех рыцарей империи.', type: 'armor', stat: 'hp', value: 180 },
+                { name: 'Доспех Дракона', price: 150000, desc: 'Чешуя древнего дракона.', type: 'armor', stat: 'hp', value: 350 },
+                { name: 'Мантия Невидимости', price: 200000, desc: 'Скрывает от глаз врагов.', type: 'armor', stat: 'hp', value: 500 },
+            ]
+        };
+
+        // ============================================================
+        // ПРОМОКОДЫ
+        // Ключ — код. gold — золото. items — массив предметов.
+        // usedKey — ключ в localStorage (автоматически генерируется если не указан).
+        // ============================================================
+        const promoCodes = {
+            'BETA': {
+                gold: 12000,
+                items: [
+                    { name: 'Меч тестера', type: 'weapon', stat: 'damage', value: 125, percent: false, dropChance: 100, desc: 'Урон 125' },
+                ],
+            },
+            'START1000': {
+                gold: 1000,
+                items: [],
+            },
+            'FREESWORD': {
+                gold: 0,
+                items: [
+                    { name: 'Бесплатный меч', type: 'weapon', stat: 'damage', value: 50, percent: false, dropChance: 100, desc: 'Урон 50' },
+                ],
+            },
+            'RICH2026': {
+                gold: 50000,
+                items: [
+                    { name: 'Золотой меч', type: 'weapon', stat: 'damage', value: 100, percent: false, dropChance: 100, desc: 'Урон 100' },
+                    { name: 'Золотая броня', type: 'armor', stat: 'hp', value: 100, percent: false, dropChance: 100, desc: 'ХП +100' },
+                ],
+            },
+            // Пример нового промокода:
+            // 'NEWCODE': {
+            //     gold: 99999,
+            //     items: [
+            //         { name: 'Меч богов', type: 'weapon', stat: 'damage', value: 999, percent: false, dropChance: 100, desc: 'Урон 999' },
+            //     ],
+            // },
+        };
+
+        // ============================================================
+        // СОХРАНЕНИЕ
+        // ============================================================
+        const SAVE_KEY = 'lineage2d_full_save';
+
+        const defaultState = {
+            gold: 10000, damage: 4, level: 1, maxLevel: 225,
+            hp: 100, maxHp: 100, exp: 0, expToLevel: 400,
+            location: 'начальный_город',
+            inventory: [],
+            equipment: { weapon: null, armor: null },
+            isDay: true
+        };
+
+        let gold = defaultState.gold;
+        let damage = defaultState.damage;
+        let level = defaultState.level;
+        let maxLevel = defaultState.maxLevel;
+        let hp = defaultState.hp;
+        let maxHp = defaultState.maxHp;
+        let exp = defaultState.exp;
+        let expToLevel = defaultState.expToLevel;
+        let currentLocation = defaultState.location;
         let inventory = [];
         let equipment = { weapon: null, armor: null };
-        let quests = {};
-        let bio = {};
-        let locs = {};
-        let mobsData = {};
-        let shopData = { weapons: [], armor: [] };
-        let legendariesData = {};
-        let promosData = {};
-        let wanderingData = [];
-        let currentLocation = 'начальный_город';
+        let isDay = defaultState.isDay;
         let mobs = [];
         let selectedMob = null;
         let mobAttackIntervals = {};
         let dayTimer = null;
 
-        // ============================================================
-        // ЗАГРУЗКА ДАННЫХ ИЗ БД
-        // ============================================================
-        async function loadAllData() {
-            // Локации
-            const { data: locsD } = await supabase.from('locs').select('*');
-            locs = {};
-            locsD.forEach(l => { locs[l.key] = { x: 100 + Math.random() * 700, y: 50 + Math.random() * 550, label: l.label, mob_type: l.mob_type, mob_count: l.mob_count }; });
+        function saveGame() {
+            try {
+                const saveData = {
+                    gold, damage, level, maxLevel, hp, maxHp, exp, expToLevel,
+                    location: currentLocation,
+                    inventory: JSON.parse(JSON.stringify(inventory)),
+                    equipment: JSON.parse(JSON.stringify(equipment)),
+                    isDay
+                };
+                localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+                const dot = document.createElement('span');
+                dot.className = 'save-dot';
+                document.getElementById('save-dot-container').appendChild(dot);
+                setTimeout(() => dot.remove(), 600);
+            } catch (e) { console.error(e); }
+        }
 
-            // Мобы
-            const { data: mobsD } = await supabase.from('mobs').select('*');
-            mobsData = {};
-            mobsD.forEach(m => { mobsData[m.key] = { ...m, drops: [] }; });
-
-            // Дроп
-            const { data: dropsD } = await supabase.from('drops').select('*');
-            dropsD.forEach(d => { if (mobsData[d.mob_key]) mobsData[d.mob_key].drops.push(d); });
-
-            // Магазин
-            const { data: shopD } = await supabase.from('shop').select('*');
-            shopData = { weapons: [], armor: [] };
-            shopD.forEach(s => { if (s.category === 'weapons') shopData.weapons.push(s); else shopData.armor.push(s); });
-
-            // Легендарки
-            const { data: legD } = await supabase.from('legendaries').select('*');
-            legendariesData = {};
-            legD.forEach(l => { legendariesData[l.key] = l; });
-
-            // Промокоды
-            const { data: promosD } = await supabase.from('promos').select('*');
-            promosData = {};
-            promosD.forEach(p => { promosData[p.code] = p; });
-
-            // Товары торговца
-            const { data: wandD } = await supabase.from('wandering').select('*');
-            wanderingData = wandD || [];
+        function loadGame() {
+            try {
+                const jsonStr = localStorage.getItem(SAVE_KEY);
+                if (!jsonStr) return false;
+                const data = JSON.parse(jsonStr);
+                if (!data || typeof data !== 'object') return false;
+                gold = data.gold ?? defaultState.gold;
+                damage = data.damage ?? defaultState.damage;
+                level = data.level ?? defaultState.level;
+                maxLevel = data.maxLevel ?? defaultState.maxLevel;
+                hp = data.hp ?? defaultState.hp;
+                maxHp = data.maxHp ?? defaultState.maxHp;
+                exp = data.exp ?? defaultState.exp;
+                expToLevel = data.expToLevel ?? defaultState.expToLevel;
+                currentLocation = data.location ?? defaultState.location;
+                inventory = Array.isArray(data.inventory) ? JSON.parse(JSON.stringify(data.inventory)) : [];
+                equipment = data.equipment ? JSON.parse(JSON.stringify(data.equipment)) : { weapon: null, armor: null };
+                isDay = data.isDay ?? true;
+                return true;
+            } catch (e) { return false; }
         }
 
         // ============================================================
-        // ЗАГРУЗКА ИГРОКА
+        // DOM
         // ============================================================
-        async function loadPlayer() {
-            const { data } = await supabase.from('players').select('*').eq('id', PLAYER_ID).single();
-            if (data) {
-                player = data;
-                currentLocation = data.location;
-                // Инвентарь
-                const { data: inv } = await supabase.from('inventory').select('*').eq('player_id', PLAYER_ID);
-                inventory = inv || [];
-                // Экипировка
-                const { data: eq } = await supabase.from('equipment').select('*').eq('player_id', PLAYER_ID).single();
-                equipment = eq ? { weapon: eq.weapon, armor: eq.armor } : { weapon: null, armor: null };
-                // Квесты
-                const { data: q } = await supabase.from('quests').select('*').eq('player_id', PLAYER_ID);
-                quests = {};
-                q.forEach(x => { quests[x.quest_key] = x; });
-                // Био
-                const { data: b } = await supabase.from('bio').select('*').eq('player_id', PLAYER_ID).single();
-                bio = b || { total_kills: 0, total_deaths: 0, favorite: 'начальный_город', strongest: '', days: 0 };
-            } else {
-                // Новый игрок
-                player = { id: PLAYER_ID, gold: 10000, damage: 4, level: 1, hp: 100, max_hp: 100, exp: 0, exp_to_level: 400, location: 'начальный_город', is_day: true, title: '', kills: 0, deaths: 0, total_kills: 0 };
-                await supabase.from('players').insert(player);
-                await supabase.from('equipment').insert({ player_id: PLAYER_ID, weapon: null, armor: null });
-                await supabase.from('bio').insert({ player_id: PLAYER_ID });
-                inventory = [];
-                equipment = { weapon: null, armor: null };
-                quests = {};
-                bio = { total_kills: 0, total_deaths: 0, favorite: 'начальный_город', strongest: '', days: 0 };
+        const gameWorld = document.getElementById('game-world');
+        const worldScroll = document.getElementById('world-scroll');
+        const inventoryOverlay = document.getElementById('inventory-overlay');
+        const shopOverlay = document.getElementById('shop-overlay');
+        const targetPanel = document.getElementById('target-panel');
+        const shopCards = document.getElementById('shop-cards');
+        const promoOverlay = document.getElementById('promo-overlay');
+        const promoInput = document.getElementById('promo-input');
+        const promoResult = document.getElementById('promo-result');
+
+        // ============================================================
+        // СТАТИСТИКА
+        // ============================================================
+        function updateStats() {
+            document.getElementById('stat-level').textContent = level;
+            document.getElementById('stat-hp').textContent = `${hp}/${maxHp}`;
+            document.getElementById('stat-exp').textContent = `${exp}/${expToLevel}`;
+            document.getElementById('stat-gold').textContent = gold.toLocaleString();
+            document.getElementById('stat-dmg').textContent = damage;
+            document.getElementById('hp-fill').style.width = (hp / maxHp * 100) + '%';
+            document.getElementById('exp-fill').style.width = (exp / expToLevel * 100) + '%';
+            document.getElementById('location-indicator').textContent = locations[currentLocation]?.label || '';
+        }
+
+        function recalcStats() {
+            let baseHp = 100 + (level - 1) * 30;
+            if (equipment.armor) {
+                if (equipment.armor.percent) baseHp = Math.floor(baseHp * (1 + equipment.armor.value / 100));
+                else baseHp += equipment.armor.value;
             }
+            maxHp = baseHp;
+            if (hp > maxHp) hp = maxHp;
+            let baseDmg = 4 + (level - 1) * 3;
+            if (equipment.weapon) baseDmg += equipment.weapon.value;
+            if (equipment.armor && equipment.armor.percent) baseDmg = Math.floor(baseDmg * (1 + equipment.armor.value / 100));
+            damage = baseDmg;
         }
 
-        async function savePlayer() {
-            player.location = currentLocation;
-            await supabase.from('players').upsert(player);
+        function showMessage(text) {
+            const msg = document.createElement('div');
+            msg.className = 'floating-msg';
+            msg.textContent = text;
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
         }
 
-        async function saveInventory() {
-            await supabase.from('inventory').delete().eq('player_id', PLAYER_ID);
-            if (inventory.length > 0) {
-                const items = inventory.map(i => ({ ...i, player_id: PLAYER_ID }));
-                await supabase.from('inventory').insert(items);
+        function showDamage(x, y, dmg) {
+            const num = document.createElement('div');
+            num.className = 'damage-num';
+            num.textContent = '-' + dmg;
+            num.style.left = x + 'px';
+            num.style.top = y + 'px';
+            gameWorld.appendChild(num);
+            setTimeout(() => num.remove(), 1200);
+        }
+
+        // ============================================================
+        // ИНВЕНТАРЬ
+        // ============================================================
+        function toggleInventory() {
+            inventoryOverlay.classList.toggle('visible');
+            shopOverlay.classList.remove('visible');
+            promoOverlay.classList.remove('visible');
+            if (inventoryOverlay.classList.contains('visible')) renderInventory();
+        }
+
+        function renderInventory() {
+            const invItems = document.getElementById('inv-items');
+            invItems.innerHTML = '';
+            if (inventory.length === 0) {
+                invItems.innerHTML = '<div style="color:#6a5a3a;text-align:center;padding:15px;">Пусто</div>';
             }
-        }
-
-        async function saveEquipment() {
-            await supabase.from('equipment').upsert({ player_id: PLAYER_ID, weapon: equipment.weapon, armor: equipment.armor });
-        }
-
-        async function saveQuests() {
-            await supabase.from('quests').delete().eq('player_id', PLAYER_ID);
-            const arr = Object.values(quests).map(q => ({ ...q, player_id: PLAYER_ID }));
-            if (arr.length > 0) await supabase.from('quests').insert(arr);
-        }
-
-        async function saveBio() {
-            await supabase.from('bio').upsert({ player_id: PLAYER_ID, ...bio });
-        }
-
-        async function saveAll() {
-            await savePlayer();
-            await saveInventory();
-            await saveEquipment();
-            await saveQuests();
-            await saveBio();
-        }
-
-        // Инициализация
-        await loadAllData();
-        await loadPlayer();
-
-        console.log('✅ Dark Relics загружена. Игрок:', PLAYER_ID);
-        console.log('Локации:', Object.keys(locs));
-        console.log('Мобы:', Object.keys(mobsData));
-        // ============================================================
-        // ОТРИСОВКА КАРТЫ
-        // ============================================================
-        function renderTeleportPoints() {
-            Object.entries(locs).forEach(([key, loc]) => {
-                const tp = document.createElement('div');
-                tp.className = 'teleport-point';
-                tp.style.left = loc.x + 'px';
-                tp.style.top = loc.y + 'px';
-                tp.textContent = '↗';
-                tp.addEventListener('click', (e) => { e.stopPropagation(); teleportTo(key); });
-                tp.addEventListener('touchend', (e) => { e.preventDefault(); teleportTo(key); });
-                gameWorld.appendChild(tp);
-                const lb = document.createElement('div');
-                lb.className = 'location-label';
-                lb.style.left = (loc.x - 25) + 'px';
-                lb.style.top = (loc.y + 36) + 'px';
-                lb.textContent = loc.label;
-                gameWorld.appendChild(lb);
+            inventory.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'inv-item';
+                const isEq = (equipment.weapon && equipment.weapon.name === item.name) ||
+                             (equipment.armor && equipment.armor.name === item.name);
+                if (isEq) div.classList.add('equipped');
+                div.innerHTML = `<span>${item.name}</span><span style="color:#8a7a4a;font-size:9px;">${item.type === 'weapon' ? '⚔️' : '🛡'}</span>`;
+                div.addEventListener('click', () => equipItem(index));
+                invItems.appendChild(div);
             });
+            document.getElementById('equip-weapon').textContent = 'Оружие: ' + (equipment.weapon ? equipment.weapon.name : 'нет');
+            document.getElementById('equip-armor').textContent = 'Броня: ' + (equipment.armor ? equipment.armor.name : 'нет');
+        }
+
+        function equipItem(index) {
+            const item = inventory[index];
+            if (!item) return;
+            if (item.type === 'weapon') {
+                equipment.weapon = (equipment.weapon && equipment.weapon.name === item.name) ? null : item;
+            } else {
+                equipment.armor = (equipment.armor && equipment.armor.name === item.name) ? null : item;
+            }
+            recalcStats();
+            renderInventory();
+            updateStats();
+            saveGame();
+        }
+
+        function addToInventory(item) {
+            inventory.push(item);
+            if (inventoryOverlay.classList.contains('visible')) renderInventory();
+            saveGame();
+        }
+
+        // ============================================================
+        // МАГАЗИН
+        // ============================================================
+        function toggleShop() {
+            shopOverlay.classList.toggle('visible');
+            inventoryOverlay.classList.remove('visible');
+            promoOverlay.classList.remove('visible');
+            if (shopOverlay.classList.contains('visible')) {
+                renderShop('weapons');
+                document.querySelector('.shop-tabs button[data-tab="weapons"]').classList.add('active');
+                document.querySelector('.shop-tabs button[data-tab="armor"]').classList.remove('active');
+            }
+        }
+
+        function renderShop(tab) {
+            shopCards.innerHTML = '';
+            shopItems[tab].forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'shop-card';
+                card.innerHTML = `
+                    <div class="card-name">${item.name}</div>
+                    <div class="card-desc">${item.desc}</div>
+                    <div class="card-price">💰 ${item.price.toLocaleString()}</div>
+                    <button class="buy-btn">КУПИТЬ</button>
+                `;
+                card.querySelector('.buy-btn').addEventListener('click', () => buyItem(item));
+                shopCards.appendChild(card);
+            });
+        }
+
+        function buyItem(item) {
+            if (gold < item.price) { showMessage('Недостаточно золота!'); return; }
+            gold -= item.price;
+            addToInventory({ name: item.name, type: item.type, stat: item.stat, value: item.value, percent: false, desc: item.desc });
+            updateStats();
+            saveGame();
+            showMessage(`Куплено: ${item.name}`);
+        }
+
+        // ============================================================
+        // ПРОМОКОДЫ
+        // ============================================================
+        function togglePromo() {
+            promoOverlay.classList.toggle('visible');
+            inventoryOverlay.classList.remove('visible');
+            shopOverlay.classList.remove('visible');
+            promoInput.value = '';
+            promoResult.textContent = '';
+            if (promoOverlay.classList.contains('visible')) promoInput.focus();
+        }
+
+        function activatePromo() {
+            const code = promoInput.value.trim().toUpperCase();
+            if (!code) { promoResult.textContent = 'Введите код'; return; }
+            const promo = promoCodes[code];
+            if (!promo) { promoResult.textContent = 'Неверный код'; return; }
+            const usedKey = promo.usedKey || ('promo_' + code);
+            if (localStorage.getItem(usedKey)) { promoResult.textContent = 'Код уже использован'; return; }
+            localStorage.setItem(usedKey, '1');
+            if (promo.gold) { gold += promo.gold; }
+            if (promo.items) {
+                promo.items.forEach(item => addToInventory({ ...item }));
+            }
+            updateStats();
+            saveGame();
+            promoResult.textContent = '✅ Код активирован!';
+            promoInput.value = '';
+            setTimeout(() => { promoOverlay.classList.remove('visible'); }, 1500);
         }
 
         // ============================================================
         // МОБЫ
         // ============================================================
         function spawnMobs(locationKey) {
-            const loc = locs[locationKey];
-            if (!loc || !loc.mob_type) return;
+            const loc = locations[locationKey];
+            if (!loc || !loc.mobType) return;
             clearMobs();
-            const data = mobsData[loc.mob_type];
+            const data = mobData[loc.mobType];
             if (!data) return;
-            for (let i = 0; i < loc.mob_count; i++) {
+            for (let i = 0; i < loc.mobCount; i++) {
                 const mob = {
                     id: 'mob_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-                    type: loc.mob_type,
+                    type: loc.mobType,
                     x: Math.max(20, Math.min(880, loc.x + (Math.random() - 0.5) * 280)),
                     y: Math.max(40, Math.min(610, loc.y + (Math.random() - 0.5) * 180)),
                     hp: data.hp, maxHp: data.hp,
-                    damage: data.damage, attackSpeed: data.speed,
-                    expMin: data.exp_min, expMax: data.exp_max, gold: data.gold,
-                    drops: data.drops, cssClass: data.css || '', name: data.name,
+                    damage: data.damage, attackSpeed: data.attackSpeed,
+                    expMin: data.expMin, expMax: data.expMax, gold: data.gold,
+                    drops: data.drops, cssClass: data.cssClass || '', name: data.name,
                     alive: true, moveInterval: null
                 };
                 mobs.push(mob);
@@ -348,7 +1016,7 @@
         }
 
         function startMobMovement(mob, locationKey) {
-            const loc = locs[locationKey];
+            const loc = locations[locationKey];
             mob.moveInterval = setInterval(() => {
                 if (!mob.alive) return;
                 mob.x = Math.max(20, Math.min(880, loc.x + (Math.random() - 0.5) * 260));
@@ -366,6 +1034,8 @@
             targetPanel.classList.add('visible');
             document.getElementById('target-name').textContent = mob.name;
             document.getElementById('target-hp').textContent = mob.hp + '/' + mob.maxHp;
+            document.getElementById('target-dmg').textContent = mob.damage;
+            document.getElementById('target-reward').textContent = mob.gold.toLocaleString() + ' зол';
         }
 
         function deselectMob() {
@@ -380,7 +1050,9 @@
 
         function attackMob() {
             if (!selectedMob || !selectedMob.alive) return;
-            selectedMob.hp -= player.damage;
+            selectedMob.hp -= damage;
+            const el = document.getElementById(selectedMob.id);
+            if (el) showDamage(selectedMob.x + 10, selectedMob.y - 10, damage);
             document.getElementById('target-hp').textContent = selectedMob.hp + '/' + selectedMob.maxHp;
             if (selectedMob.hp <= 0) { killMob(selectedMob); return; }
             if (!mobAttackIntervals[selectedMob.id]) {
@@ -390,11 +1062,11 @@
                         delete mobAttackIntervals[selectedMob?.id];
                         return;
                     }
-                    player.hp -= selectedMob.damage;
-                    if (player.hp < 0) player.hp = 0;
-                    updateStats();
-                    saveAll();
-                    if (player.hp <= 0) playerDeath();
+                    hp -= selectedMob.damage;
+                    if (hp < 0) hp = 0;
+                    updateStats(); saveGame();
+                    showMessage(`Враг атакует! -${selectedMob.damage} HP`);
+                    if (hp <= 0) playerDeath();
                 }, selectedMob.attackSpeed);
             }
         }
@@ -404,109 +1076,40 @@
             if (mob.moveInterval) clearInterval(mob.moveInterval);
             if (mobAttackIntervals[mob.id]) { clearInterval(mobAttackIntervals[mob.id]); delete mobAttackIntervals[mob.id]; }
             const el = document.getElementById(mob.id); if (el) el.remove();
-            player.exp += Math.floor(Math.random() * (mob.expMax - mob.expMin + 1)) + mob.expMin;
-            player.gold += mob.gold;
-            player.kills++;
-            player.total_kills++;
-            bio.total_kills++;
+            exp += Math.floor(Math.random() * (mob.expMax - mob.expMin + 1)) + mob.expMin;
+            gold += mob.gold;
             checkDrops(mob);
-            if (equipment.weapon === 'Треснутый Меч') {
-                player.extra_rift = (player.extra_rift || 0) + 1;
-                if (player.extra_rift >= 30) completeStep('riftblade', 'rift_5');
-            }
-            if (quests.scythe && quests.scythe.active && currentLocation === 'лес') {
-                quests.scythe.extra = quests.scythe.extra || {};
-                quests.scythe.extra.kills = (quests.scythe.extra.kills || 0) + 1;
-                if (quests.scythe.extra.kills >= 50) completeStep('scythe', 'scythe_3');
-            }
             if (selectedMob && selectedMob.id === mob.id) deselectMob();
             checkLevelUp();
-            updateStats();
-            saveAll();
+            updateStats(); saveGame();
+            showMessage(`Побеждён! +${mob.gold} золота`);
             mobs = mobs.filter(m => m.id !== mob.id);
         }
 
         function checkDrops(mob) {
-            mob.drops.forEach(d => {
-                if (Math.random() * 100 < d.chance) {
-                    addToInventory({ name: d.name, type: d.type, stat: d.stat, value: d.value, percent: d.percent, legendary: false, unidentified: (Math.random() < 0.3), item_desc: '' });
-                    showMessage(`🎁 ${d.name}!`);
+            mob.drops.forEach(drop => {
+                if (Math.random() * 100 < drop.dropChance) {
+                    addToInventory({ name: drop.name, type: drop.type, stat: drop.stat, value: drop.value, percent: drop.percent || false, desc: drop.desc });
+                    showMessage(`🎁 Дроп: ${drop.name}!`);
                 }
             });
-            // Спец-дропы для легендарок
-            if (mob.type === 'ellad' && Math.random() * 100 < 5) {
-                if (quests.shield && quests.shield.active && !quests.shield.steps[3]?.done) {
-                    addToInventory({ name: 'Половина щита', type: 'quest', stat: 'none', value: 0, percent: false, legendary: false, unidentified: false, item_desc: 'Для Щита' });
-                    completeStep('shield', 'shield_4');
-                }
-                if (quests.eye && quests.eye.active && !quests.eye.steps[1]?.done) {
-                    addToInventory({ name: 'Глаз Хранителя', type: 'quest', stat: 'none', value: 0, percent: false, legendary: false, unidentified: false, item_desc: 'Для Ока' });
-                    completeStep('eye', 'eye_2');
-                }
-                if (quests.phoenix && quests.phoenix.active && !quests.phoenix.steps[2]?.done) {
-                    addToInventory({ name: 'Кровь Дракона', type: 'quest', stat: 'none', value: 0, percent: false, legendary: false, unidentified: false, item_desc: 'Для Кольца' });
-                    completeStep('phoenix', 'phoenix_3');
-                }
-            }
-            if (mob.type === 'forest' && Math.random() * 100 < 5 && quests.riftblade && quests.riftblade.active && !quests.riftblade.steps[0]?.done) {
-                addToInventory({ name: 'Осколок 1', type: 'quest', stat: 'none', value: 0, percent: false, legendary: false, unidentified: false, item_desc: 'Для Меча' });
-                completeStep('riftblade', 'rift_1');
-            }
         }
 
         function checkLevelUp() {
-            while (player.exp >= player.exp_to_level && player.level < 225) {
-                player.exp -= player.exp_to_level;
-                player.level++;
-                player.exp_to_level = Math.floor(player.exp_to_level * 1.4);
-                player.hp = player.max_hp;
-                recalcStats();
-                updateStats();
-                saveAll();
-                showMessage(`🎉 Уровень ${player.level}!`);
-                if (player.level >= 40 && !quests.scythe) startQuest('scythe');
-                checkTitles();
+            while (exp >= expToLevel && level < maxLevel) {
+                exp -= expToLevel; level++;
+                expToLevel = Math.floor(expToLevel * 1.4);
+                hp = maxHp; recalcStats(); updateStats(); saveGame();
+                showMessage(`🎉 Уровень ${level}!`);
             }
         }
 
         function playerDeath() {
-            const phoenixRing = inventory.find(i => i.name === 'Кольцо Феникса' && i.active);
-            if (phoenixRing && currentLocation !== 'начальный_город') {
-                player.hp = Math.floor(player.max_hp * 0.4);
-                showMessage('🔥 Кольцо Феникса воскресило вас!');
-                updateStats();
-                saveAll();
-                return;
-            }
             showMessage('💀 Вы погибли...');
-            player.hp = Math.floor(player.max_hp / 2);
-            player.gold = Math.floor(player.gold * 0.9);
-            player.deaths++;
-            bio.total_deaths++;
-            deselectMob();
-            updateStats();
-            saveAll();
-            if (quests.scythe && quests.scythe.active) quests.scythe.extra.kills = 0;
+            hp = Math.floor(maxHp / 2);
+            gold = Math.floor(gold * 0.9);
+            deselectMob(); updateStats(); saveGame();
             teleportTo('начальный_город');
-        }
-
-        function recalcStats() {
-            let bHp = 100 + (player.level - 1) * 30;
-            if (equipment.armor) {
-                const arm = inventory.find(i => i.name === equipment.armor);
-                if (arm) {
-                    if (arm.percent) bHp = Math.floor(bHp * (1 + arm.value / 100));
-                    else bHp += arm.value;
-                }
-            }
-            player.max_hp = bHp;
-            if (player.hp > player.max_hp) player.hp = player.max_hp;
-            let bDmg = 4 + (player.level - 1) * 3;
-            if (equipment.weapon) {
-                const wep = inventory.find(i => i.name === equipment.weapon);
-                if (wep) bDmg += wep.value;
-            }
-            player.damage = bDmg;
         }
 
         // ============================================================
@@ -517,835 +1120,113 @@
             currentLocation = locationKey;
             spawnMobs(locationKey);
             updateStats();
-            const loc = locs[locationKey];
-            if (loc) worldScroll.scrollTo({ left: Math.max(0, loc.x - worldScroll.clientWidth / 2), top: Math.max(0, loc.y - worldScroll.clientHeight / 2), behavior: 'smooth' });
-            if (bio.favorite !== locationKey && player.kills > bio.total_kills * 0.3) bio.favorite = locationKey;
-            saveAll();
-            showMessage(`📍 ${loc.label}`);
-        }
-
-        // ============================================================
-        // ИНВЕНТАРЬ
-        // ============================================================
-        function addToInventory(item) {
-            inventory.push(item);
-            saveAll();
-        }
-
-        function hasItem(name) { return inventory.some(i => i.name === name); }
-
-        function equipItem(index) {
-            const item = inventory[index];
-            if (!item) return;
-            if (item.type === 'weapon') {
-                equipment.weapon = (equipment.weapon === item.name) ? null : item.name;
-            } else if (item.type === 'armor') {
-                equipment.armor = (equipment.armor === item.name) ? null : item.name;
-            } else if (item.name === 'Кольцо Феникса') {
-                item.active = !item.active;
+            const loc = locations[locationKey];
+            if (loc) {
+                worldScroll.scrollTo({ left: Math.max(0, loc.x - worldScroll.clientWidth / 2), top: Math.max(0, loc.y - worldScroll.clientHeight / 2), behavior: 'smooth' });
             }
-            recalcStats();
-            updateStats();
-            saveAll();
+            saveGame();
+            showMessage(`📍 ${locations[locationKey].label}`);
         }
 
-        function identifyItem(index) {
-            const item = inventory[index];
-            if (!item || !item.unidentified) return;
-            item.unidentified = false;
-            // Случайный бафф или дебафф
-            const roll = Math.random();
-            if (roll < 0.3) { item.value = Math.floor(item.value * 1.5);
-                item.legendary = true;
-                item.item_desc = '✨ Легендарный!'; } else if (roll < 0.6) { item.value = Math.floor(item.value * 0.7);
-                item.item_desc = 'Проклятый...'; } else { item.item_desc = 'Обычный предмет.'; }
-            saveAll();
-            showMessage(`🔍 ${item.name} опознан!`);
-        }
-
-        // ============================================================
-        // МАГАЗИН
-        // ============================================================
-        function buyShopItem(item) {
-            if (player.gold < item.price) { showMessage('Недостаточно золота!'); return; }
-            player.gold -= item.price;
-            addToInventory({ name: item.name, type: item.type, stat: item.stat, value: item.value, percent: false, legendary: false, unidentified: false, item_desc: item.description || '' });
-            updateStats();
-            saveAll();
-            showMessage(`Куплено: ${item.name}`);
-        }
-
-        function buyWanderingItem(item) {
-            if (player.gold < item.price) { showMessage('Недостаточно золота!'); return; }
-            player.gold -= item.price;
-            if (item.name === 'Мешок с лутом') {
-                const roll = Math.random();
-                if (roll < 0.005) addToInventory({ name: 'Легендарный самоцвет', type: 'special', stat: 'none', value: 0, percent: false, legendary: true, unidentified: false, item_desc: 'Джекпот!' });
-                else if (roll < 0.1) addToInventory({ name: 'Редкий меч', type: 'weapon', stat: 'damage', value: 100, percent: false, legendary: false, unidentified: false, item_desc: 'Из мешка' });
-                else addToInventory({ name: 'Обычный меч', type: 'weapon', stat: 'damage', value: 20, percent: false, legendary: false, unidentified: false, item_desc: 'Из мешка' });
-            } else {
-                addToInventory({ name: item.name, type: item.type, stat: item.stat, value: item.value, percent: false, legendary: false, unidentified: false, item_desc: item.description || '' });
-            }
-            updateStats();
-            saveAll();
-            showMessage(`Куплено: ${item.name}`);
-        }
-
-        // ============================================================
-        // ПРОМОКОДЫ
-        // ============================================================
-        async function activatePromo() {
-            const code = document.getElementById('promo-input').value.trim().toUpperCase();
-            if (!code) return;
-            const promo = promosData[code];
-            if (!promo) { document.getElementById('promo-result').textContent = 'Неверный код'; return; }
-            const usedKey = 'promo_' + code;
-            if (localStorage.getItem(usedKey)) { document.getElementById('promo-result').textContent = 'Код использован'; return; }
-            localStorage.setItem(usedKey, '1');
-            if (promo.gold) player.gold += promo.gold;
-            if (promo.items && promo.items.length > 0) {
-                promo.items.forEach(i => addToInventory({ ...i, unidentified: false, legendary: false }));
-            }
-            if (promo.uses > 0) { promo.uses--; await supabase.from('promos').update({ uses: promo.uses }).eq('code', code); if (promo.uses <= 0) delete promosData[code]; }
-            updateStats();
-            saveAll();
-            document.getElementById('promo-result').textContent = '✅ Активирован!';
-            setTimeout(() => document.getElementById('promo-overlay').classList.remove('visible'), 1500);
-        }
-
-        // ============================================================
-        // ТИТУЛЫ
-        // ============================================================
-        function checkTitles() {
-            if (player.total_kills >= 1000 && !player.title.includes('Убийца 1000')) player.title = '🥇 Убийца 1000';
-            else if (player.total_kills >= 500 && !player.title.includes('Охотник')) player.title = '🎯 Охотник';
-            else if (player.total_kills >= 100 && !player.title.includes('Воин')) player.title = '⚔️ Воин';
-            if (player.deaths === 0 && player.level >= 50 && !player.title.includes('Бессмертный')) player.title = '💫 Бессмертный';
-            if (player.gold <= 0 && player.level >= 10 && !player.title.includes('Нищий')) player.title = '🪙 Нищий';
-            document.getElementById('title-display').textContent = player.title;
-        }
-
-        // ============================================================
-        // КВЕСТЫ
-        // ============================================================
-        function startQuest(qk) {
-            if (quests[qk]) return;
-            const leg = legendariesData[qk];
-            if (!leg) return;
-            quests[qk] = { quest_key: qk, quest_name: leg.name, active: true, completed: false, steps: JSON.parse(JSON.stringify(leg.steps)), extra: {} };
-            showMessage(`📜 Квест: ${leg.name}!`);
-            saveAll();
-        }
-
-        function completeStep(qk, sid) {
-            const q = quests[qk];
-            if (!q || !q.active || q.completed) return;
-            const step = q.steps.find(s => s.id === sid);
-            if (step && !step.done) {
-                step.done = true;
-                showMessage(`✅ ${step.text}`);
-                saveAll();
-                checkQuestCompletion(qk);
-            }
-        }
-
-        function checkQuestCompletion(qk) {
-            const q = quests[qk];
-            if (!q || !q.active || q.completed) return;
-            if (q.steps.every(s => s.done)) {
-                q.completed = true;
-                q.active = false;
-                const leg = legendariesData[qk];
-                if (leg.reward_type === 'weapon' || leg.reward_type === 'armor')
-                    addToInventory({ name: leg.reward_name, type: leg.reward_type, stat: leg.reward_type === 'weapon' ? 'damage' : 'hp', value: leg.reward_value, percent: false, legendary: true, unidentified: false, item_desc: leg.reward_desc });
-                else if (leg.reward_type === 'special')
-                    addToInventory({ name: leg.reward_name, type: 'special', stat: 'none', value: 0, percent: false, legendary: true, unidentified: false, item_desc: leg.reward_desc });
-                showMessage(`🎉 ${q.quest_name} завершён!`);
-                saveAll();
-            }
-        }
-
-        // ============================================================
-        // БРОДЯЧИЙ ТОРГОВЕЦ
-        // ============================================================
-        let wanderingTimer = null;
-        let wanderingNpc = null;
-
-        function spawnWanderingMerchant() {
-            if (wanderingNpc) wanderingNpc.remove();
-            const locKeys = Object.keys(locs).filter(k => k !== currentLocation);
-            const randomLoc = locs[locKeys[Math.floor(Math.random() * locKeys.length)]];
-            const npc = document.createElement('div');
-            npc.className = 'npc wandering-merchant';
-            npc.textContent = '🎪';
-            npc.style.left = (randomLoc.x + 30) + 'px';
-            npc.style.top = (randomLoc.y - 20) + 'px';
-            npc.addEventListener('click', (e) => { e.stopPropagation(); showWanderingShop(); });
-            gameWorld.appendChild(npc);
-            wanderingNpc = npc;
-            showMessage('🎪 Бродячий торговец появился!');
-            setTimeout(() => { if (wanderingNpc) { wanderingNpc.remove();
-                    wanderingNpc = null; } }, 600000);
-        }
-
-        function showWanderingShop() {
-            shopCards.innerHTML = '';
-            wanderingData.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'shop-card';
-                card.innerHTML = `<div class="card-name">${item.name}</div><div>💰 ${item.price}</div><button class="buy-btn">КУПИТЬ</button>`;
-                card.querySelector('.buy-btn').addEventListener('click', () => buyWanderingItem(item));
-                shopCards.appendChild(card);
+        function renderTeleportPoints() {
+            Object.entries(locations).forEach(([key, loc]) => {
+                const tp = document.createElement('div');
+                tp.className = 'teleport-point';
+                tp.style.left = loc.x + 'px';
+                tp.style.top = loc.y + 'px';
+                tp.textContent = '↗';
+                tp.addEventListener('click', (e) => { e.stopPropagation(); teleportTo(key); });
+                tp.addEventListener('touchend', (e) => { e.preventDefault(); teleportTo(key); });
+                gameWorld.appendChild(tp);
+                const label = document.createElement('div');
+                label.className = 'location-label';
+                label.style.left = (loc.x - 25) + 'px';
+                label.style.top = (loc.y + 36) + 'px';
+                label.textContent = loc.label;
+                gameWorld.appendChild(label);
             });
-            shopOverlay.classList.add('visible');
         }
 
         // ============================================================
-        // ПОГОДА
+        // ДЕНЬ/НОЧЬ
         // ============================================================
-        let weatherInterval = null;
-
-        function startWeatherSystem() {
-            weatherInterval = setInterval(() => {
-                const roll = Math.random();
-                const world = document.getElementById('game-world');
-                world.classList.remove('rain', 'infected');
-                if (roll < 0.2) {
-                    world.classList.add('rain');
-                    showWeatherIndicator('🌧 Дождь! Мобы медленнее, но их больше.');
-                } else if (roll < 0.3) {
-                    world.classList.add('infected');
-                    document.querySelectorAll('.mob').forEach(m => m.classList.add('infected'));
-                    showWeatherIndicator('☠ Заражение! Мобы сильнее, дроп х3!');
-                    setTimeout(() => {
-                        world.classList.remove('infected');
-                        document.querySelectorAll('.mob').forEach(m => m.classList.remove('infected'));
-                    }, 600000);
-                }
-            }, 300000);
-        }
-
-        function showWeatherIndicator(text) {
-            const el = document.createElement('div');
-            el.className = 'weather-indicator';
-            el.textContent = text;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 4000);
+        function startDayNightCycle() {
+            if (!isDay) gameWorld.classList.add('night');
+            if (dayTimer) clearTimeout(dayTimer);
+            dayTimer = setTimeout(() => {
+                isDay = false; gameWorld.classList.add('night'); saveGame();
+                showMessage('🌙 Наступила ночь...');
+                dayTimer = setTimeout(() => {
+                    isDay = true; gameWorld.classList.remove('night'); saveGame();
+                    showMessage('☀️ Наступил день!');
+                    startDayNightCycle();
+                }, 160000);
+            }, isDay ? 160000 : 10000);
         }
 
         // ============================================================
         // ИНИЦИАЛИЗАЦИЯ
         // ============================================================
-        function updateStats() {
-            document.getElementById('stat-level').textContent = player.level;
-            document.getElementById('stat-hp').textContent = `${player.hp}/${player.max_hp}`;
-            document.getElementById('stat-exp').textContent = `${player.exp}/${player.exp_to_level}`;
-            document.getElementById('stat-gold').textContent = player.gold.toLocaleString();
-            document.getElementById('stat-dmg').textContent = player.damage;
-            document.getElementById('hp-fill').style.width = (player.hp / player.max_hp * 100) + '%';
-            document.getElementById('exp-fill').style.width = (player.exp / player.exp_to_level * 100) + '%';
-            document.getElementById('location-indicator').textContent = locs[currentLocation]?.label || '';
-            document.getElementById('title-display').textContent = player.title || '';
-        }
-
-        function showMessage(text) {
-            const m = document.createElement('div');
-            m.className = 'floating-msg';
-            m.textContent = text;
-            document.body.appendChild(m);
-            setTimeout(() => m.remove(), 2000);
-        }
-
-        function renderAllNPCs() {
-            const city = locs['начальный_город'];
-            // Алхимик
-            addNPC('🧪', city.x - 55, city.y - 30, () => {
-                if (quests.shield && quests.shield.active && !quests.shield.steps.find(s => s.id === 'shield_2').done && player.gold >= 30000) {
-                    player.gold -= 30000;
-                    completeStep('shield', 'shield_2');
-                    showMessage('🧪 Куплено взрыв-зелье!');
-                    updateStats();
-                    saveAll();
-                }
-                if (quests.phoenix && quests.phoenix.active && !quests.phoenix.steps.find(s => s.id === 'phoenix_2').done && hasItem('Пепел')) {
-                    completeStep('phoenix', 'phoenix_2');
-                }
-                if (quests.phoenix && quests.phoenix.active && !quests.phoenix.steps.find(s => s.id === 'phoenix_4').done && hasItem('Кровь Дракона')) {
-                    completeStep('phoenix', 'phoenix_4');
-                    addToInventory({ name: 'Пепельное Кольцо', type: 'special', stat: 'none', value: 0, percent: false, legendary: false, unidentified: false, item_desc: 'Умереть с ним для активации', active: false });
-                }
-            });
-            // Кузнец
-            addNPC('⚒️', city.x + 55, city.y - 30, () => {
-                if (quests.shield && quests.shield.active && quests.shield.steps.find(s => s.id === 'shield_4').done && hasItem('Половина щита')) {
-                    completeStep('shield', 'shield_5');
-                }
-                if (quests.riftblade && quests.riftblade.active && ['rift_1', 'rift_2', 'rift_3'].every(id => quests.riftblade.steps.find(s => s.id === id).done) && !quests.riftblade.steps.find(s => s.id === 'rift_4').done) {
-                    completeStep('riftblade', 'rift_4');
-                    addToInventory({ name: 'Треснутый Меч', type: 'weapon', stat: 'damage', value: 40, percent: false, legendary: false, unidentified: false, item_desc: 'Убейте 30 мобов им' });
-                }
-            });
-            // Старец в Подземельях
-            const dung = locs['подземелья'];
-            addNPC('👨‍🦯', dung.x + 50, dung.y - 20, () => {
-                if (!quests.eye) startQuest('eye');
-                if (quests.eye && quests.eye.active && !quests.eye.steps.find(s => s.id === 'eye_1').done) completeStep('eye', 'eye_1');
-                if (quests.eye && quests.eye.active && quests.eye.steps.find(s => s.id === 'eye_2').done && !quests.eye.steps.find(s => s.id === 'eye_3').done) completeStep('eye', 'eye_3');
-            });
-            // Леди Вуаль
-            const field = locs['пустырь'];
-            addNPC('🧙‍♀️', field.x - 50, field.y + 40, () => {
-                if (quests.riftblade && quests.riftblade.active && !quests.riftblade.steps.find(s => s.id === 'rift_3').done) {
-                    completeStep('riftblade', 'rift_3');
-                    addToInventory({ name: 'Осколок 3', type: 'quest', stat: 'none', value: 0, percent: false, legendary: false, unidentified: false, item_desc: 'Для Меча' });
-                }
-            });
-            // Призрак в Лесу (ночью)
-            if (!player.is_day && quests.scythe && quests.scythe.active) {
-                const forest = locs['лес'];
-                addNPC('👻', forest.x - 30, forest.y + 30, () => {
-                    if (!quests.scythe.steps.find(s => s.id === 'scythe_2').done) completeStep('scythe', 'scythe_2');
-                    if (quests.scythe.steps.find(s => s.id === 'scythe_3').done && !quests.scythe.steps.find(s => s.id === 'scythe_4').done) completeStep('scythe', 'scythe_4');
-                });
-            }
-            // Скрытые объекты
-            addHiddenObject('🧱', field.x - 60, field.y - 20, () => {
-                if (!quests.shield) startQuest('shield');
-                if (quests.shield && quests.shield.active && !quests.shield.steps.find(s => s.id === 'shield_1').done) completeStep('shield', 'shield_1');
-                if (quests.shield && quests.shield.active && quests.shield.steps.find(s => s.id === 'shield_2').done && !quests.shield.steps.find(s => s.id === 'shield_3').done) {
-                    completeStep('shield', 'shield_3');
-                    addToInventory({ name: 'Половина щита', type: 'quest', stat: 'none', value: 0, percent: false, legendary: false, unidentified: false, item_desc: 'Для Щита' });
-                }
-            });
-            const cave = locs['пещера'];
-            addHiddenObject('💧', cave.x + 50, cave.y + 30, () => {
-                if (quests.riftblade && quests.riftblade.active && !quests.riftblade.steps.find(s => s.id === 'rift_2').done) {
-                    completeStep('riftblade', 'rift_2');
-                    addToInventory({ name: 'Осколок 2', type: 'quest', stat: 'none', value: 0, percent: false, legendary: false, unidentified: false, item_desc: 'Для Меча' });
-                }
-            });
-            addHiddenObject('🪶', field.x + 60, field.y + 30, () => {
-                if (!quests.phoenix) startQuest('phoenix');
-                if (quests.phoenix && quests.phoenix.active && !quests.phoenix.steps.find(s => s.id === 'phoenix_1').done) {
-                    completeStep('phoenix', 'phoenix_1');
-                    addToInventory({ name: 'Пепел', type: 'quest', stat: 'none', value: 0, percent: false, legendary: false, unidentified: false, item_desc: 'Для Кольца' });
-                }
-            });
-        }
-
-        function addNPC(emoji, x, y, onClick) {
-            const npc = document.createElement('div');
-            npc.className = 'npc';
-            npc.textContent = emoji;
-            npc.style.left = x + 'px';
-            npc.style.top = y + 'px';
-            npc.addEventListener('click', (e) => { e.stopPropagation();
-                onClick(); });
-            npc.addEventListener('touchend', (e) => { e.preventDefault();
-                onClick(); });
-            gameWorld.appendChild(npc);
-        }
-
-        function addHiddenObject(emoji, x, y, onClick) {
-            const obj = document.createElement('div');
-            obj.className = 'hidden-object';
-            obj.textContent = emoji;
-            obj.style.left = x + 'px';
-            obj.style.top = y + 'px';
-            obj.addEventListener('click', (e) => { e.stopPropagation();
-                onClick(); });
-            obj.addEventListener('touchend', (e) => { e.preventDefault();
-                onClick(); });
-            gameWorld.appendChild(obj);
-        }
-
-        // ============================================================
-        // ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ
-        // ============================================================
         function initGame() {
-            recalcStats();
-            updateStats();
+            locations = randomLocations();
+            const loaded = loadGame();
+            if (!loaded) {
+                gold = defaultState.gold; damage = defaultState.damage;
+                level = defaultState.level; maxLevel = defaultState.maxLevel;
+                hp = defaultState.hp; maxHp = defaultState.maxHp;
+                exp = defaultState.exp; expToLevel = defaultState.expToLevel;
+                currentLocation = defaultState.location;
+                inventory = []; equipment = { weapon: null, armor: null };
+                isDay = defaultState.isDay;
+                saveGame();
+            }
+            recalcStats(); updateStats();
             renderTeleportPoints();
-            renderAllNPCs();
             spawnMobs(currentLocation);
-            if (!player.is_day) document.getElementById('game-world').classList.add('night');
+            if (!isDay) gameWorld.classList.add('night');
             startDayNightCycle();
-            startWeatherSystem();
-            wanderingTimer = setInterval(() => spawnWanderingMerchant(), 1800000 + Math.random() * 1800000);
-            checkTitles();
-            updateBioDisplay();
-            const loc = locs[currentLocation];
+            const loc = locations[currentLocation];
             if (loc) setTimeout(() => worldScroll.scrollTo({ left: Math.max(0, loc.x - worldScroll.clientWidth / 2), top: Math.max(0, loc.y - worldScroll.clientHeight / 2) }), 300);
-            showMessage('🆕 Dark Relics загружена!');
+            showMessage(loaded ? '📂 Прогресс загружен!' : '🆕 Новая игра!');
         }
 
-        function startDayNightCycle() {
-            if (!player.is_day) document.getElementById('game-world').classList.add('night');
-            if (dayTimer) clearTimeout(dayTimer);
-            dayTimer = setTimeout(() => {
-                player.is_day = false;
-                document.getElementById('game-world').classList.add('night');
-                saveAll();
-                showMessage('🌙 Ночь...');
-                dayTimer = setTimeout(() => {
-                    player.is_day = true;
-                    document.getElementById('game-world').classList.remove('night');
-                    bio.days++;
-                    saveAll();
-                    showMessage('☀️ День!');
-                    startDayNightCycle();
-                }, 160000);
-            }, player.is_day ? 160000 : 10000);
-        }
-
-        function updateBioDisplay() {
-            document.getElementById('bio-list').innerHTML = `
-                📅 Создан: ${new Date(bio.created_date || Date.now()).toLocaleDateString()}<br>
-                ⚔️ Убито: ${bio.total_kills}<br>
-                💀 Смертей: ${bio.total_deaths}<br>
-                📍 Локация: ${locs[bio.favorite]?.label || '—'}<br>
-                👑 Босс: ${bio.strongest || '—'}<br>
-                📆 Дней: ${bio.days}
-            `;
-        }
-
-        // DOM события
-        const gameWorld = document.getElementById('game-world');
-        const worldScroll = document.getElementById('world-scroll');
-        const inventoryOverlay = document.getElementById('inventory-overlay');
-        const shopOverlay = document.getElementById('shop-overlay');
-        const targetPanel = document.getElementById('target-panel');
-        const shopCards = document.getElementById('shop-cards');
-        const promoOverlay = document.getElementById('promo-overlay');
-        const questLog = document.getElementById('quest-log');
-        const bioLog = document.getElementById('bio-log');
-
-        document.getElementById('btn-inventory').addEventListener('click', () => {
-            inventoryOverlay.classList.toggle('visible');
-            if (inventoryOverlay.classList.contains('visible')) {
-                const inv = document.getElementById('inv-items');
-                inv.innerHTML = '';
-                inventory.forEach((item, idx) => {
-                    const div = document.createElement('div');
-                    div.className = 'inv-item';
-                    if (equipment.weapon === item.name || equipment.armor === item.name) div.classList.add('equipped');
-                    if (item.legendary) div.classList.add('legendary');
-                    if (item.unidentified) div.classList.add('unidentified');
-                    div.innerHTML = `<span>${item.unidentified ? '❓ ' : ''}${item.legendary ? '⭐ ' : ''}${item.name}</span><span>${item.type==='weapon'?'⚔️':item.type==='armor'?'🛡':'💠'}</span>`;
-                    div.addEventListener('click', () => equipItem(idx));
-                    if (item.unidentified) {
-                        const btn = document.createElement('button');
-                        btn.textContent = '🔍';
-                        btn.style.cssText = 'font-size:8px;margin-left:4px;background:#4a3a6a;color:#ddd;border:1px solid #3a2a5a;cursor:pointer;';
-                        btn.addEventListener('click', (e) => { e.stopPropagation();
-                            identifyItem(idx);
-                            inventoryOverlay.classList.remove('visible');
-                            inventoryOverlay.classList.add('visible'); });
-                        div.appendChild(btn);
-                    }
-                    inv.appendChild(div);
-                });
-            }
-        });
-
-        document.getElementById('btn-shop').addEventListener('click', () => {
-            shopOverlay.classList.toggle('visible');
-            if (shopOverlay.classList.contains('visible')) {
-                shopCards.innerHTML = '';
-                shopData.weapons.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'shop-card';
-                    card.innerHTML = `<div class="card-name">${item.name}</div><div>💰 ${item.price}</div><button class="buy-btn">КУПИТЬ</button>`;
-                    card.querySelector('.buy-btn').addEventListener('click', () => buyShopItem(item));
-                    shopCards.appendChild(card);
-                });
-            }
-        });
-
-        document.getElementById('btn-save').addEventListener('click', () => { saveAll();
-            showMessage('💾 Сохранено!'); });
-        document.getElementById('btn-promo').addEventListener('click', () => promoOverlay.classList.toggle('visible'));
-        document.getElementById('btn-quests').addEventListener('click', () => {
-            questLog.classList.toggle('visible');
-            if (questLog.classList.contains('visible')) {
-                let h = '';
-                Object.values(quests).forEach(q => {
-                    if (q.active && !q.completed) {
-                        h += `<div style="color:#ff6600;">🔹 ${q.quest_name}</div>`;
-                        q.steps.forEach(s => { h += `<div>${s.done?'✅':'⬜'} ${s.text}</div>`; });
-                    }
-                });
-                document.getElementById('quest-list').innerHTML = h || 'Нет активных квестов';
-            }
-        });
-        document.getElementById('btn-bio').addEventListener('click', () => { bioLog.classList.toggle('visible');
-            updateBioDisplay(); });
+        // ============================================================
+        // СОБЫТИЯ
+        // ============================================================
+        document.getElementById('btn-inventory').addEventListener('click', toggleInventory);
+        document.getElementById('btn-shop').addEventListener('click', toggleShop);
+        document.getElementById('btn-save').addEventListener('click', () => { saveGame(); showMessage('💾 Сохранено!'); });
+        document.getElementById('btn-promo').addEventListener('click', togglePromo);
         document.getElementById('shop-close').addEventListener('click', () => shopOverlay.classList.remove('visible'));
+        document.getElementById('promo-close').addEventListener('click', () => promoOverlay.classList.remove('visible'));
         document.getElementById('btn-attack').addEventListener('click', attackMob);
         document.getElementById('btn-cancel-target').addEventListener('click', deselectMob);
         document.getElementById('promo-submit').addEventListener('click', activatePromo);
-        gameWorld.addEventListener('click', (e) => { if (e.target === gameWorld) deselectMob(); });
-
-        initGame();
-        // ============================================================
-        // ВИЗУАЛЬНЫЕ ЭФФЕКТЫ
-        // ============================================================
-        function showDamageNumber(x, y, damage) {
-            const el = document.createElement('div');
-            el.className = 'damage-num';
-            el.textContent = '-' + damage;
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            gameWorld.appendChild(el);
-            setTimeout(() => el.remove(), 1200);
-        }
-
-        function showHealNumber(x, y, amount) {
-            const el = document.createElement('div');
-            el.className = 'damage-num';
-            el.textContent = '+' + amount;
-            el.style.color = '#44ff44';
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            gameWorld.appendChild(el);
-            setTimeout(() => el.remove(), 1200);
-        }
-
-        function showGoldDrop(x, y, amount) {
-            const el = document.createElement('div');
-            el.style.cssText = `position:absolute;color:#ffcc00;font-weight:bold;font-size:11px;pointer-events:none;z-index:40;left:${x}px;top:${y}px;animation: goldFloat 1.5s forwards;`;
-            el.textContent = '+' + amount + ' 💰';
-            gameWorld.appendChild(el);
-            setTimeout(() => el.remove(), 1500);
-        }
-
-        function screenShake() {
-            const world = document.getElementById('game-world');
-            world.style.animation = 'shake 0.3s ease';
-            setTimeout(() => world.style.animation = '', 300);
-        }
-
-        function criticalHitEffect(x, y) {
-            const el = document.createElement('div');
-            el.style.cssText = `position:absolute;color:#ff4400;font-weight:bold;font-size:16px;pointer-events:none;z-index:45;left:${x}px;top:${y-15}px;animation: critPop 0.8s forwards;`;
-            el.textContent = '💥 КРИТ!';
-            gameWorld.appendChild(el);
-            setTimeout(() => el.remove(), 800);
-        }
-
-        // ============================================================
-        // УЛУЧШЕННЫЙ БОЙ (переопределяем функции)
-        // ============================================================
-        const originalAttackMob = attackMob;
-        const originalKillMob = killMob;
-
-        attackMob = function() {
-            if (!selectedMob || !selectedMob.alive) return;
-            let dmg = player.damage;
-            let isCrit = Math.random() < 0.1;
-            if (isCrit) dmg = Math.floor(dmg * 2.5);
-            if (Math.random() < 0.05) { showMessage('Промах!'); return; }
-            selectedMob.hp -= dmg;
-            const el = document.getElementById(selectedMob.id);
-            if (el) {
-                if (isCrit) { criticalHitEffect(selectedMob.x, selectedMob.y);
-                    screenShake(); }
-                showDamageNumber(selectedMob.x + 10, selectedMob.y - 10, dmg);
-            }
-            document.getElementById('target-hp').textContent = Math.max(0, selectedMob.hp) + '/' + selectedMob.maxHp;
-            if (selectedMob.hp <= 0) { killMob(selectedMob); return; }
-            if (!mobAttackIntervals[selectedMob.id]) {
-                mobAttackIntervals[selectedMob.id] = setInterval(() => {
-                    if (!selectedMob || !selectedMob.alive || !mobs.find(m => m.id === selectedMob?.id)) {
-                        clearInterval(mobAttackIntervals[selectedMob?.id]);
-                        delete mobAttackIntervals[selectedMob?.id];
-                        return;
-                    }
-                    const hasShield = equipment.armor && inventory.find(i => i.name === equipment.armor && i.legendary);
-                    if (hasShield && Math.random() < 0.15) { showMessage('🛡 Заблокировано!'); return; }
-                    player.hp -= selectedMob.damage;
-                    if (player.hp < 0) player.hp = 0;
-                    updateStats();
-                    saveAll();
-                    if (player.hp <= 0) playerDeath();
-                }, selectedMob.attackSpeed);
-            }
-        };
-
-        killMob = function(mob) {
-            mob.alive = false;
-            if (mob.moveInterval) clearInterval(mob.moveInterval);
-            if (mobAttackIntervals[mob.id]) { clearInterval(mobAttackIntervals[mob.id]); delete mobAttackIntervals[mob.id]; }
-            const el = document.getElementById(mob.id);
-            if (el) { el.style.transition = 'all 0.3s ease';
-                el.style.transform = 'scale(0)';
-                el.style.opacity = '0';
-                setTimeout(() => el.remove(), 300); }
-            showGoldDrop(mob.x, mob.y + 15, mob.gold);
-            if (equipment.weapon === 'Коса Смерти') {
-                const heal = Math.floor(player.max_hp * 0.08);
-                player.hp = Math.min(player.max_hp, player.hp + heal);
-                showHealNumber(mob.x, mob.y - 20, heal);
-            }
-            const expGain = Math.floor(Math.random() * (mob.expMax - mob.expMin + 1)) + mob.expMin;
-            player.exp += expGain;
-            player.gold += mob.gold;
-            player.kills++;
-            player.total_kills++;
-            bio.total_kills++;
-            if (mob.maxHp > (bio.strongest_hp || 0)) { bio.strongest = mob.name;
-                bio.strongest_hp = mob.maxHp; }
-            checkDrops(mob);
-            if (equipment.weapon === 'Треснутый Меч') { player.rift_kills = (player.rift_kills || 0) + 1; if (player.rift_kills >= 30) completeStep('riftblade', 'rift_5'); }
-            if (quests.scythe && quests.scythe.active && currentLocation === 'лес') { quests.scythe.extra = quests.scythe.extra || {};
-                quests.scythe.extra.kills = (quests.scythe.extra.kills || 0) + 1; if (quests.scythe.extra.kills >= 50) completeStep('scythe', 'scythe_3'); }
-            if (selectedMob && selectedMob.id === mob.id) deselectMob();
-            checkLevelUp();
-            updateStats();
-            saveAll();
-            mobs = mobs.filter(m => m.id !== mob.id);
-        };
-
-        // ============================================================
-        // ТИТУЛЫ (расширенные)
-        // ============================================================
-        const titles = [
-            { check: () => player.total_kills >= 1000, title: '🥇 Убийца 1000' },
-            { check: () => player.total_kills >= 500, title: '🎯 Охотник' },
-            { check: () => player.total_kills >= 100, title: '⚔️ Воин' },
-            { check: () => player.deaths === 0 && player.level >= 50, title: '💫 Бессмертный' },
-            { check: () => player.gold <= 0 && player.level >= 10, title: '🪙 Нищий' },
-            { check: () => player.gold >= 1000000, title: '👑 Миллионер' },
-            { check: () => player.level >= 225, title: '🌟 Легенда' },
-            { check: () => player.total_kills >= 100 && bio.total_kills > 50, title: '🌙 Ночной Охотник' },
-        ];
-
-        function checkTitles() {
-            let newTitle = '';
-            for (const t of titles) { if (t.check()) newTitle = t.title; }
-            if (newTitle && player.title !== newTitle) { player.title = newTitle;
-                showMessage(`🏆 Титул: ${newTitle}!`); }
-            document.getElementById('title-display').textContent = player.title || '';
-        }
-
-        // ============================================================
-        // БИОГРАФИЯ
-        // ============================================================
-        function updateBioDisplay() {
-            const now = new Date();
-            const created = new Date(bio.created_date || now);
-            const daysSince = Math.floor((now - created) / (1000 * 60 * 60 * 24));
-            document.getElementById('bio-list').innerHTML = `
-                <div style="color:#ff6600;font-weight:bold;">📜 БИОГРАФИЯ</div>
-                📅 Создан: ${created.toLocaleDateString()}<br>
-                📆 Дней: ${bio.days || daysSince}<br>
-                ⚔️ Убито: ${bio.total_kills}<br>
-                💀 Смертей: ${bio.total_deaths}<br>
-                📍 Локация: ${locs[bio.favorite]?.label || '—'}<br>
-                👑 Босс: ${bio.strongest || '—'}<br>
-                🏆 Титул: ${player.title || '—'}<br>
-                💰 Золото: ${player.gold.toLocaleString()}
-            `;
-        }
-
-        // ============================================================
-        // ДОСКА СЛАВЫ
-        // ============================================================
-        async function showLeaderboard() {
-            const { data } = await supabase.from('players').select('*').order('level', { ascending: false }).limit(10);
-            if (!data) return;
-            let html = '<div style="color:#ff6600;font-weight:bold;margin-bottom:4px;">🏆 ДОСКА СЛАВЫ</div>';
-            data.forEach((p, i) => {
-                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '  ';
-                html += `<div style="font-size:8px;">${medal} Ур.${p.level} ${p.title||''}</div>`;
-            });
-            const board = document.createElement('div');
-            board.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,5,0,0.95);border:3px solid #c9a432;padding:12px;z-index:500;font-size:10px;color:#c0a060;';
-            board.innerHTML = html + '<button style="margin-top:8px;padding:4px 12px;background:#4a3a1a;border:1px solid #c9a432;color:#c9a432;cursor:pointer;">ЗАКРЫТЬ</button>';
-            board.querySelector('button').addEventListener('click', () => board.remove());
-            document.body.appendChild(board);
-        }
-
-        // ============================================================
-        // СИСТЕМА ДОСТИЖЕНИЙ
-        // ============================================================
-        const achievements = [
-            { id: 'first_kill', name: 'Первая кровь', check: () => player.total_kills >= 1 },
-            { id: 'hundred', name: 'Сотня', check: () => player.total_kills >= 100 },
-            { id: 'thousand', name: 'Тысячник', check: () => player.total_kills >= 1000 },
-            { id: 'rich', name: 'Богач', check: () => player.gold >= 100000 },
-            { id: 'level50', name: 'Полтинник', check: () => player.level >= 50 },
-            { id: 'level100', name: 'Сотник', check: () => player.level >= 100 },
-            { id: 'level225', name: 'Легенда', check: () => player.level >= 225 },
-            { id: 'nodeath', name: 'Бессмертный', check: () => player.deaths === 0 && player.level >= 50 },
-            { id: 'explorer', name: 'Исследователь', check: () => {
-                const v = JSON.parse(localStorage.getItem('dr_visited') || '[]');
-                return v.length >= 6;
-            }},
-        ];
-
-        function checkAchievements() {
-            const earned = JSON.parse(localStorage.getItem('dr_achievements') || '[]');
-            achievements.forEach(a => {
-                if (!earned.includes(a.id) && a.check()) {
-                    earned.push(a.id);
-                    localStorage.setItem('dr_achievements', JSON.stringify(earned));
-                    showMessage(`🏅 ${a.name}!`);
-                }
-            });
-        }
-
-        function trackLocation(locKey) {
-            const visited = JSON.parse(localStorage.getItem('dr_visited') || '[]');
-            if (!visited.includes(locKey)) { visited.push(locKey);
-                localStorage.setItem('dr_visited', JSON.stringify(visited)); }
-        }
-
-        const origTeleport = teleportTo;
-        teleportTo = function(locKey) { trackLocation(locKey);
-            origTeleport(locKey); };
-
-        // ============================================================
-        // ЗАКРЕПЛЕНИЕ КНОПКИ ЛИДЕРБОРДА (двойной клик по Bio)
-        // ============================================================
-        let bioClickTimer = null;
-        document.getElementById('btn-bio').addEventListener('dblclick', showLeaderboard);
-        // ============================================================
-        // ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ
-        // ============================================================
-        function initGame() {
-            recalcStats();
-            updateStats();
-            renderTeleportPoints();
-            renderAllNPCs();
-            spawnMobs(currentLocation);
-            if (!player.is_day) document.getElementById('game-world').classList.add('night');
-            startDayNightCycle();
-            startWeatherSystem();
-            wanderingTimer = setInterval(() => spawnWanderingMerchant(), 1800000 + Math.random() * 1800000);
-            checkTitles();
-            checkAchievements();
-            updateBioDisplay();
-            const loc = locs[currentLocation];
-            if (loc) setTimeout(() => worldScroll.scrollTo({ left: Math.max(0, loc.x - worldScroll.clientWidth / 2), top: Math.max(0, loc.y - worldScroll.clientHeight / 2) }), 300);
-            showMessage('🆕 Dark Relics загружена!');
-        }
-
-        function startDayNightCycle() {
-            if (!player.is_day) document.getElementById('game-world').classList.add('night');
-            if (dayTimer) clearTimeout(dayTimer);
-            dayTimer = setTimeout(() => {
-                player.is_day = false;
-                document.getElementById('game-world').classList.add('night');
-                saveAll();
-                showMessage('🌙 Ночь...');
-                dayTimer = setTimeout(() => {
-                    player.is_day = true;
-                    document.getElementById('game-world').classList.remove('night');
-                    bio.days++;
-                    saveAll();
-                    showMessage('☀️ День!');
-                    startDayNightCycle();
-                }, 160000);
-            }, player.is_day ? 160000 : 10000);
-        }
-
-        // ============================================================
-        // DOM-СОБЫТИЯ
-        // ============================================================
-        document.getElementById('btn-inventory').addEventListener('click', () => {
-            inventoryOverlay.classList.toggle('visible');
-            if (inventoryOverlay.classList.contains('visible')) {
-                const inv = document.getElementById('inv-items');
-                inv.innerHTML = '';
-                inventory.forEach((item, idx) => {
-                    const div = document.createElement('div');
-                    div.className = 'inv-item';
-                    if (equipment.weapon === item.name || equipment.armor === item.name) div.classList.add('equipped');
-                    if (item.legendary) div.classList.add('legendary');
-                    if (item.unidentified) div.classList.add('unidentified');
-                    div.innerHTML = `<span>${item.unidentified ? '❓ ' : ''}${item.legendary ? '⭐ ' : ''}${item.name}</span><span>${item.type==='weapon'?'⚔️':item.type==='armor'?'🛡':'💠'}</span>`;
-                    div.addEventListener('click', () => equipItem(idx));
-                    if (item.unidentified) {
-                        const btn = document.createElement('button');
-                        btn.textContent = '🔍';
-                        btn.style.cssText = 'font-size:8px;margin-left:4px;background:#4a3a6a;color:#ddd;border:1px solid #3a2a5a;cursor:pointer;';
-                        btn.addEventListener('click', (e) => { e.stopPropagation();
-                            identifyItem(idx); });
-                        div.appendChild(btn);
-                    }
-                    inv.appendChild(div);
-                });
-            }
-        });
-
-        document.getElementById('btn-shop').addEventListener('click', () => {
-            shopOverlay.classList.toggle('visible');
-            if (shopOverlay.classList.contains('visible')) {
-                shopCards.innerHTML = '';
-                const activeTab = document.querySelector('.shop-tabs button.active');
-                const tab = activeTab ? activeTab.dataset.tab : 'weapons';
-                shopData[tab].forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'shop-card';
-                    card.innerHTML = `<div class="card-name">${item.name}</div><div>💰 ${item.price.toLocaleString()}</div><button class="buy-btn">КУПИТЬ</button>`;
-                    card.querySelector('.buy-btn').addEventListener('click', () => buyShopItem(item));
-                    shopCards.appendChild(card);
-                });
-            }
-        });
-
-        document.getElementById('btn-save').addEventListener('click', () => { saveAll();
-            showMessage('💾 Сохранено!'); });
-        document.getElementById('btn-promo').addEventListener('click', () => promoOverlay.classList.toggle('visible'));
-        document.getElementById('btn-quests').addEventListener('click', () => {
-            questLog.classList.toggle('visible');
-            if (questLog.classList.contains('visible')) {
-                let h = '';
-                Object.values(quests).forEach(q => {
-                    if (q.active && !q.completed) {
-                        h += `<div style="color:#ff6600;">🔹 ${q.quest_name}</div>`;
-                        q.steps.forEach(s => { h += `<div>${s.done?'✅':'⬜'} ${s.text}</div>`; });
-                    }
-                });
-                document.getElementById('quest-list').innerHTML = h || 'Нет активных квестов';
-            }
-        });
-        document.getElementById('btn-bio').addEventListener('click', () => { bioLog.classList.toggle('visible');
-            updateBioDisplay(); });
-        document.getElementById('shop-close').addEventListener('click', () => shopOverlay.classList.remove('visible'));
-        document.getElementById('btn-attack').addEventListener('click', attackMob);
-        document.getElementById('btn-cancel-target').addEventListener('click', deselectMob);
-        document.getElementById('promo-submit').addEventListener('click', activatePromo);
+        promoInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') activatePromo(); });
 
         document.querySelectorAll('.shop-tabs button').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.shop-tabs button').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                const tab = btn.dataset.tab;
-                shopCards.innerHTML = '';
-                shopData[tab].forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'shop-card';
-                    card.innerHTML = `<div class="card-name">${item.name}</div><div>💰 ${item.price.toLocaleString()}</div><button class="buy-btn">КУПИТЬ</button>`;
-                    card.querySelector('.buy-btn').addEventListener('click', () => buyShopItem(item));
-                    shopCards.appendChild(card);
-                });
+                renderShop(btn.dataset.tab);
             });
         });
 
-        gameWorld.addEventListener('click', (e) => { if (e.target === gameWorld) deselectMob(); });
-        worldScroll.addEventListener('scroll', () => { const hint = document.querySelector('.swipe-hint'); if (hint) hint.style.opacity = '0'; }, { once: true });
+        gameWorld.addEventListener('click', (e) => {
+            if (e.target === gameWorld || e.target.classList.contains('location-label')) deselectMob();
+        });
 
-        // Автосохранение
-        setInterval(() => saveAll(), 5000);
-        window.addEventListener('beforeunload', () => saveAll());
-        window.addEventListener('pagehide', () => saveAll());
-        document.addEventListener('visibilitychange', () => { if (document.hidden) saveAll(); });
+        worldScroll.addEventListener('scroll', () => {
+            const hint = document.querySelector('.swipe-hint');
+            if (hint) hint.style.opacity = '0';
+        }, { once: true });
 
-        // Запуск
+        setInterval(() => saveGame(), 5000);
+        window.addEventListener('beforeunload', () => saveGame());
+        window.addEventListener('pagehide', () => saveGame());
+        document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
+
         initGame();
-        console.log('✅ Dark Relics полностью загружена!');
     </script>
 </body>
 </html>
